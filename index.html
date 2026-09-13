@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<meta name="description" content="readcine 各站入口：片库、银幕奖讯、AI 情报站。">
 <title>readcine · 导航</title>
 <style>
   :root {
@@ -82,7 +83,6 @@
 
   header { margin-bottom: 40px; }
   .brand { margin: 0 0 8px; }
-  /* 标题即刷新按钮：点一下重新探活，不另加一个按钮占地方 */
   .brand button {
     font: inherit;
     font-size: 30px; font-weight: 650; letter-spacing: -.02em;
@@ -94,7 +94,6 @@
   .brand button:hover { opacity: .7; }
   .brand button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
   .brand .dot { color: var(--accent); }
-  /* 检测中时点号转起来，作为「正在刷新」的反馈 */
   .brand button.busy .dot {
     display: inline-block;
     animation: spin .7s linear infinite;
@@ -132,7 +131,6 @@
   }
   .card.down { opacity: .62; }
 
-  /* 低调卡片：次要服务（电影资源库）——透明底、淡字、无边框 */
   .card.muted {
     background: transparent;
     border: 1px dashed var(--border);
@@ -226,7 +224,7 @@
         readcine<span class="dot">.</span>
       </button>
     </h1>
-    <p class="tagline">主站二级页面跳转</p>
+    <p class="tagline">各站入口 · 点标题刷新状态</p>
   </header>
 
   <main class="grid" id="grid"></main>
@@ -234,40 +232,43 @@
   <footer>
     <span id="stamp">—</span>
     <span class="sep"></span>
-    <button id="theme" type="button">主题</button>
+    <button id="theme" type="button">浅色</button>
   </footer>
 </div>
 
 <script>
-// 加新服务只改这个数组：url 填最终要用的地址，fallback 填域名没通时的临时地址
 const SERVICES = [
   {
-    icon: '📡',
-    name: 'AI 情报站',
-    desc: '全球 AI 编程助手与 Agent 官方更新，中文提炼。',
-    url: 'https://ai.readcine.com',
-    fallback: 'https://ai-readcine.forcine.dpdns.org',
+    icon: '🎬',
+    name: '电影资源库',
+    desc: '片库检索与更新。',
+    url: 'https://movie.readcine.com',
+    fallback: 'https://movieupdate.forcine.dpdns.org',
+    forceFallback: true, // 品牌域目前 Cloudflare 502，no-cors 会误报在线
   },
   {
     icon: '🏆',
     name: '电影获奖资讯',
     desc: '提名、获奖与流媒体预计上线时间。',
-    url: 'http://news.readcine.com',
-    fallback: 'https://news.readcine.com',
+    url: 'https://news.readcine.com',
+    fallback: 'https://xmcter.github.io/movie-awards-site/',
+    cors: true,
+  },
+  {
+    icon: '📡',
+    name: 'AI 情报站',
+    desc: 'AI 工具与 Agent 更新，中文提炼。',
+    url: 'https://ai.readcine.com',
+    fallback: 'https://ai-readcine.forcine.dpdns.org',
+    cors: true,
   },
   {
     icon: '📊',
     name: 'UsageHub',
-    desc: '订阅与用量管理面板。',
+    desc: '订阅与用量面板（自用）。',
     url: 'https://usage.readcine.com',
     fallback: 'https://usagehub.forcine.dpdns.org',
-  },
-  {
-    icon: '🎬',
-    name: '电影资源库',
-    desc: '资源站，本机 8080 反代。',
-    url: 'https://movie.readcine.com',
-    fallback: 'https://movieupdate.forcine.dpdns.org',
+    muted: true,
   },
 ];
 
@@ -293,13 +294,26 @@ const cards = SERVICES.map(svc => {
   return { svc, el: a };
 });
 
-// 探活：no-cors 只能知道「连不连得上」，够用了；连不上就退回 fallback
-function probe(url, ms = 6000) {
+async function probe(url, { cors = false, ms = 6000 } = {}) {
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), ms);
-  return fetch(url, { mode: 'no-cors', cache: 'no-store', signal: ctl.signal })
-    .then(() => true).catch(() => false)
-    .finally(() => clearTimeout(timer));
+  try {
+    if (cors) {
+      try {
+        const head = await fetch(url, { method: 'HEAD', mode: 'cors', cache: 'no-store', signal: ctl.signal });
+        return head.ok;
+      } catch {
+        const res = await fetch(url, { method: 'GET', mode: 'cors', cache: 'no-store', signal: ctl.signal });
+        return res.ok;
+      }
+    }
+    await fetch(url, { mode: 'no-cors', cache: 'no-store', signal: ctl.signal });
+    return true;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function setStatus(el, state, text) {
@@ -308,16 +322,30 @@ function setStatus(el, state, text) {
   s.querySelector('.txt').textContent = text;
 }
 
+function markFallback(el, fallback) {
+  el.href = fallback;
+  el.querySelector('.host').innerHTML =
+    `${new URL(fallback).host}<span class="pending">走备用地址</span>`;
+}
+
 async function check({ svc, el }) {
-  if (await probe(svc.url)) {
+  if (svc.forceFallback && svc.fallback) {
+    markFallback(el, svc.fallback);
+    if (await probe(svc.fallback, { cors: !!svc.cors }) || await probe(svc.fallback)) {
+      setStatus(el, 'up', '在线');
+      return;
+    }
+    el.classList.add('down');
+    setStatus(el, 'down', '离线');
+    return;
+  }
+
+  if (await probe(svc.url, { cors: !!svc.cors })) {
     setStatus(el, 'up', '在线');
     return;
   }
-  if (svc.fallback && await probe(svc.fallback)) {
-    // 正式域名没通，但备用地址活着：改指备用，并标注
-    el.href = svc.fallback;
-    el.querySelector('.host').innerHTML =
-      `${new URL(svc.fallback).host}<span class="pending">域名待生效</span>`;
+  if (svc.fallback && (await probe(svc.fallback, { cors: !!svc.cors }) || await probe(svc.fallback))) {
+    markFallback(el, svc.fallback);
     setStatus(el, 'up', '在线');
     return;
   }
@@ -329,12 +357,13 @@ const brandBtn = document.getElementById('brand-btn');
 let refreshing = false;
 
 async function refresh() {
-  if (refreshing) return;                 // 连点不重复跑
+  if (refreshing) return;
   refreshing = true;
   brandBtn.classList.add('busy');
-  // 重新探活前把卡片打回「检测中」，否则看不出点击有反应
-  for (const { el } of cards) {
+  for (const { el, svc } of cards) {
     el.classList.remove('down');
+    el.href = svc.url;
+    el.querySelector('.host').textContent = new URL(svc.url).host;
     setStatus(el, 'check', '检测中');
   }
   try {
@@ -350,20 +379,27 @@ async function refresh() {
 brandBtn.addEventListener('click', refresh);
 refresh();
 
-// 主题：跟随系统，可手动覆盖
 const KEY = 'forcine-theme';
+const themeBtn = document.getElementById('theme');
 const saved = localStorage.getItem(KEY);
 if (saved) document.documentElement.dataset.theme = saved;
-document.getElementById('theme').onclick = () => {
+
+function isDark() {
   const root = document.documentElement;
-  const dark = root.dataset.theme
+  return root.dataset.theme
     ? root.dataset.theme === 'dark'
     : matchMedia('(prefers-color-scheme: dark)').matches;
-  root.dataset.theme = dark ? 'light' : 'dark';
-  localStorage.setItem(KEY, root.dataset.theme);
+}
+function syncThemeLabel() {
+  themeBtn.textContent = isDark() ? '浅色' : '深色';
+}
+syncThemeLabel();
+themeBtn.onclick = () => {
+  document.documentElement.dataset.theme = isDark() ? 'light' : 'dark';
+  localStorage.setItem(KEY, document.documentElement.dataset.theme);
+  syncThemeLabel();
 };
 
-// 数字键 1-9 直达
 addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   const i = parseInt(e.key, 10) - 1;
