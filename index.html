@@ -132,26 +132,6 @@
   }
   .card.down { opacity: .62; }
 
-  .card.muted {
-    background: transparent;
-    border: 1px dashed var(--border);
-    box-shadow: none;
-    opacity: .62;
-    padding: 14px 18px;
-  }
-  .card.muted:hover {
-    background: transparent;
-    border-color: var(--border-hover);
-    box-shadow: none;
-    transform: none;
-    opacity: .85;
-  }
-  .card.muted .icon { font-size: 15px; opacity: .8; }
-  .card.muted .name { font-size: 13px; font-weight: 500; }
-  .card.muted .desc { font-size: 12px; margin-bottom: 8px; }
-  .card.muted .host { font-size: 10.5px; }
-  .card.muted .status { font-size: 10px; }
-
   .card-top {
     display: flex; align-items: center; gap: 10px;
     margin-bottom: 10px;
@@ -269,6 +249,10 @@ const SERVICES = [
     desc: '片库检索与更新。',
     url: 'https://movieupdate.forcine.dpdns.org',
     fallback: 'https://movie-readcine.forcine.dpdns.org',
+    live: [
+      'https://movieupdate.forcine.dpdns.org/api/movies?group=1',
+      'https://movie-readcine.forcine.dpdns.org/api/movies?group=1',
+    ],
   },
   {
     id: 'news',
@@ -320,7 +304,6 @@ const cards = SERVICES.map(svc => {
   a.className = 'card' + (svc.muted ? ' muted' : '');
   a.href = svc.url;
   a.rel = 'noopener';
-
   const host = new URL(svc.url).host;
   a.innerHTML = `
     <div class="card-top">
@@ -330,7 +313,6 @@ const cards = SERVICES.map(svc => {
     </div>
     <p class="desc">${svc.desc}</p>
     <div class="host">${host}</div>`;
-
   grid.appendChild(a);
   return { svc, el: a };
 });
@@ -352,9 +334,36 @@ function readSeen() {
 }
 
 function writeSeen(seen) {
+  try { localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); } catch {}
+}
+
+function fmtWhen(ts) {
+  const s = String(ts || '');
+  const m = s.match(/(\d{4})-(\d{2})-(\d{2})/);
+  return m ? (m[2] + '-' + m[3]) : '';
+}
+
+async function fetchLiveMovies(urls) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 8000);
   try {
-    localStorage.setItem(SEEN_KEY, JSON.stringify(seen));
-  } catch { /* 隐私模式或配额满则跳过 */ }
+    for (const url of urls) {
+      try {
+        const res = await fetch(url, { mode: 'cors', cache: 'no-store', signal: ctl.signal });
+        if (!res.ok) continue;
+        const d = await res.json();
+        const rows = Array.isArray(d.data) ? d.data : [];
+        const items = rows.slice(0, 3).map(r => ({
+          when: fmtWhen(r.posted_at || r.updated_at),
+          text: r.title || '',
+        })).filter(it => it.text);
+        if (items.length) return items;
+      } catch {}
+    }
+  } finally {
+    clearTimeout(timer);
+  }
+  return null;
 }
 
 async function loadHeadlines() {
@@ -362,6 +371,11 @@ async function loadHeadlines() {
     const res = await fetch('headlines.json?v=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) return;
     const data = await res.json();
+    const movieCard = cards.find(c => c.svc.id === 'movie');
+    if (movieCard && movieCard.svc.live) {
+      const live = await fetchLiveMovies(movieCard.svc.live);
+      if (live && live.length) data.movie = live;
+    }
     const seen = readSeen();
     const next = Object.assign({}, seen);
     let anyFresh = false;
@@ -377,11 +391,9 @@ async function loadHeadlines() {
     }
     writeSeen(next);
     const stamp = document.getElementById('stamp');
-    if (anyFresh && data.updated) stamp.dataset.head = '新摘要 ' + data.updated;
+    if (anyFresh) stamp.dataset.head = '有新入库';
     else delete stamp.dataset.head;
-  } catch {
-    /* 摘要加载失败时只保留站点说明 */
-  }
+  } catch {}
 }
 
 async function probe(url, opts) {
@@ -432,7 +444,6 @@ async function check(card) {
     setStatus(el, 'down', '离线');
     return;
   }
-
   if (await probe(svc.url, { cors: !!svc.cors })) {
     setStatus(el, 'up', '在线');
     return;
