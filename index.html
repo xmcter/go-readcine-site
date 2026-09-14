@@ -79,7 +79,7 @@
                  "Microsoft YaHei", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 900px; margin: 0 auto; padding: 72px 24px 56px; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 72px 24px 56px; }
 
   header { margin-bottom: 40px; }
   .brand { margin: 0 0 8px; }
@@ -103,8 +103,9 @@
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 14px;
+    align-items: start;
   }
 
   .card {
@@ -180,6 +181,29 @@
     font-size: 13px; line-height: 1.55; color: var(--muted);
     margin: 0 0 12px;
   }
+  .peek {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .peek li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--text);
+  }
+  .peek .when {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--faint);
+    padding-top: 2px;
+    white-space: nowrap;
+  }
   .host {
     font-family: var(--mono);
     font-size: 11.5px;
@@ -224,7 +248,7 @@
         readcine<span class="dot">.</span>
       </button>
     </h1>
-    <p class="tagline">各站入口 · 点标题刷新状态</p>
+    <p class="tagline">各站最近更新 · 点卡片进站 · 点标题刷新状态</p>
   </header>
 
   <main class="grid" id="grid"></main>
@@ -239,6 +263,7 @@
 <script>
 const SERVICES = [
   {
+    id: 'movie',
     icon: '🎬',
     name: '电影资源库',
     desc: '片库检索与更新。',
@@ -246,6 +271,7 @@ const SERVICES = [
     fallback: 'https://movie-readcine.forcine.dpdns.org',
   },
   {
+    id: 'news',
     icon: '🏆',
     name: '电影获奖资讯',
     desc: '提名、获奖与流媒体预计上线时间。',
@@ -254,6 +280,7 @@ const SERVICES = [
     cors: true,
   },
   {
+    id: 'ai',
     icon: '📡',
     name: 'AI 情报站',
     desc: 'AI 工具与 Agent 更新，中文提炼。',
@@ -264,6 +291,29 @@ const SERVICES = [
 ];
 
 const grid = document.getElementById('grid');
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&', '<': '<', '>': '>', '"': '"', "'": '&#39;'
+  }[c]));
+}
+
+function peekHtml(items) {
+  if (!items || !items.length) return '';
+  return `<ul class="peek">${items.slice(0, 3).map(it =>
+    `<li><span class="when">${esc(it.when || '')}</span><span>${esc(it.text || '')}</span></li>`
+  ).join('')}</ul>`;
+}
+
+function renderPeek(el, items) {
+  const host = el.querySelector('.host');
+  const old = el.querySelector('.peek');
+  if (old) old.remove();
+  if (!items || !items.length) return;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = peekHtml(items);
+  host.before(wrap.firstElementChild);
+}
 
 const cards = SERVICES.map(svc => {
   const a = document.createElement('a');
@@ -284,6 +334,26 @@ const cards = SERVICES.map(svc => {
   grid.appendChild(a);
   return { svc, el: a };
 });
+
+async function loadHeadlines() {
+  try {
+    const res = await fetch('headlines.json?v=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    for (const { svc, el } of cards) {
+      renderPeek(el, data[svc.id]);
+    }
+    if (data.updated) {
+      const stamp = document.getElementById('stamp');
+      const extra = '卡片更新 ' + data.updated;
+      if (!stamp.dataset.head) {
+        stamp.dataset.head = extra;
+      }
+    }
+  } catch {
+    /* 本地摘要加载失败时只保留站点说明 */
+  }
+}
 
 async function probe(url, { cors = false, ms = 6000 } = {}) {
   const ctl = new AbortController();
@@ -358,8 +428,10 @@ async function refresh() {
     setStatus(el, 'check', '检测中');
   }
   try {
-    await Promise.all(cards.map(check));
+    await Promise.all([Promise.all(cards.map(check)), loadHeadlines()]);
+    const head = document.getElementById('stamp').dataset.head;
     document.getElementById('stamp').textContent =
+      (head ? head + ' · ' : '') +
       '最后检测 ' + new Date().toLocaleTimeString('zh-CN', { hour12: false });
   } finally {
     brandBtn.classList.remove('busy');
