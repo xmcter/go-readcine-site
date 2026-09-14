@@ -248,7 +248,7 @@
         readcine<span class="dot">.</span>
       </button>
     </h1>
-    <p class="tagline">各站最近更新 · 点卡片进站 · 点标题刷新状态</p>
+    <p class="tagline">有新摘要才显在卡片里 · 点卡片进站 · 点标题刷新状态</p>
   </header>
 
   <main class="grid" id="grid"></main>
@@ -293,9 +293,9 @@ const SERVICES = [
 const grid = document.getElementById('grid');
 
 function esc(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&': '&', '<': '<', '>': '>', '"': '"', "'": '&#39;'
-  }[c]));
+  const d = document.createElement('div');
+  d.textContent = s == null ? '' : String(s);
+  return d.innerHTML;
 }
 
 function peekHtml(items) {
@@ -335,27 +335,58 @@ const cards = SERVICES.map(svc => {
   return { svc, el: a };
 });
 
+const SEEN_KEY = 'readcine-headlines-seen';
+
+function fingerprint(items) {
+  return JSON.stringify((items || []).slice(0, 3).map(it => [it.when || '', it.text || '']));
+}
+
+function readSeen() {
+  try {
+    const raw = localStorage.getItem(SEEN_KEY);
+    const obj = raw ? JSON.parse(raw) : {};
+    return obj && typeof obj === 'object' ? obj : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeSeen(seen) {
+  try {
+    localStorage.setItem(SEEN_KEY, JSON.stringify(seen));
+  } catch { /* 隐私模式或配额满则跳过 */ }
+}
+
 async function loadHeadlines() {
   try {
     const res = await fetch('headlines.json?v=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) return;
     const data = await res.json();
+    const seen = readSeen();
+    const next = Object.assign({}, seen);
+    let anyFresh = false;
     for (const { svc, el } of cards) {
-      renderPeek(el, data[svc.id]);
-    }
-    if (data.updated) {
-      const stamp = document.getElementById('stamp');
-      const extra = '卡片更新 ' + data.updated;
-      if (!stamp.dataset.head) {
-        stamp.dataset.head = extra;
+      const items = data[svc.id] || [];
+      const fp = fingerprint(items);
+      const fresh = items.length > 0 && fp !== seen[svc.id];
+      renderPeek(el, fresh ? items : []);
+      if (fresh) {
+        next[svc.id] = fp;
+        anyFresh = true;
       }
     }
+    writeSeen(next);
+    const stamp = document.getElementById('stamp');
+    if (anyFresh && data.updated) stamp.dataset.head = '新摘要 ' + data.updated;
+    else delete stamp.dataset.head;
   } catch {
-    /* 本地摘要加载失败时只保留站点说明 */
+    /* 摘要加载失败时只保留站点说明 */
   }
 }
 
-async function probe(url, { cors = false, ms = 6000 } = {}) {
+async function probe(url, opts) {
+  const cors = opts && opts.cors;
+  const ms = (opts && opts.ms) || 6000;
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), ms);
   try {
@@ -389,7 +420,8 @@ function markFallback(el, fallback) {
     `${new URL(fallback).host}<span class="pending">走备用地址</span>`;
 }
 
-async function check({ svc, el }) {
+async function check(card) {
+  const svc = card.svc, el = card.el;
   if (svc.forceFallback && svc.fallback) {
     markFallback(el, svc.fallback);
     if (await probe(svc.fallback, { cors: !!svc.cors }) || await probe(svc.fallback)) {
@@ -421,11 +453,11 @@ async function refresh() {
   if (refreshing) return;
   refreshing = true;
   brandBtn.classList.add('busy');
-  for (const { el, svc } of cards) {
-    el.classList.remove('down');
-    el.href = svc.url;
-    el.querySelector('.host').textContent = new URL(svc.url).host;
-    setStatus(el, 'check', '检测中');
+  for (const card of cards) {
+    card.el.classList.remove('down');
+    card.el.href = card.svc.url;
+    card.el.querySelector('.host').textContent = new URL(card.svc.url).host;
+    setStatus(card.el, 'check', '检测中');
   }
   try {
     await Promise.all([Promise.all(cards.map(check)), loadHeadlines()]);
