@@ -60,6 +60,8 @@ const SERVICES = [
   { id: 'news', icon: '🏆', name: '银幕新讯', desc: '作者向新片、A类电影节与奖讯。不收爆米花。', url: 'https://news.readcine.com', fallback: 'https://xmcter.github.io/movie-awards-site/', cors: true },
   { id: 'ai', icon: '📡', name: 'AI 情报站', desc: 'AI 工具与 Agent 更新，中文提炼。', url: 'https://ai.readcine.com', fallback: 'https://ai-readcine.forcine.dpdns.org', cors: true }
 ];
+const PEEK_URL = 'https://movieupdate.forcine.dpdns.org/api/peek';
+const JUNK_RE = /(ARASHI|AROUND ASIA|演唱会|音乐会|巡演|音乐节|concert|tour live|MV合集)/i;
 const grid = document.getElementById('grid');
 function esc(s){const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
 function whenKey(w){
@@ -84,6 +86,21 @@ function renderPeek(el,items){
   if(old) old.replaceWith(node);
   else host.before(node);
 }
+function fmtWhen(iso){
+  const m=String(iso||'').match(/(\d{4})-(\d{2})-(\d{2})/);
+  if(!m) return '';
+  return m[2]+'-'+m[3];
+}
+function cleanTitle(t){
+  return String(t||'').replace(/\s+/g,' ').trim();
+}
+function isJunkTitle(t){
+  const s=cleanTitle(t);
+  if(!s || s.length<2) return true;
+  if(JUNK_RE.test(s)) return true;
+  if(/^[A-Z0-9 .]{20,}$/.test(s) && /\b(IN|TOKYO|ASIA|LIVE)\b/.test(s)) return true;
+  return false;
+}
 const cards=SERVICES.map(svc=>{
   const a=document.createElement('a');
   a.className='card'; a.href=svc.url; a.rel='noopener';
@@ -93,13 +110,35 @@ const cards=SERVICES.map(svc=>{
 });
 async function loadHeadlines(){
   try{
-    const res=await fetch('headlines.json',{cache:'no-store'});
+    const res=await fetch('headlines.json?t='+Date.now(),{cache:'no-store'});
     if(!res.ok) return;
     const data=await res.json();
     for(const {svc,el} of cards){
       const items=data[svc.id]||[];
       renderPeek(el, items);
     }
+  }catch(e){}
+}
+async function loadMoviePeek(){
+  const movie=cards.find(c=>c.svc.id==='movie');
+  if(!movie) return;
+  try{
+    const res=await fetch(PEEK_URL,{cache:'no-store',mode:'cors'});
+    if(!res.ok) return;
+    const data=await res.json();
+    const rows=(data&&data.data)||[];
+    const items=[];
+    const seen=new Set();
+    for(const row of rows){
+      const title=cleanTitle(row.title);
+      if(isJunkTitle(title)) continue;
+      const key=title.replace(/[《》]/g,'').toLowerCase();
+      if(seen.has(key)) continue;
+      seen.add(key);
+      items.push({when:fmtWhen(row.posted_at||row.updated_at), text:'《'+title+'》'});
+      if(items.length>=3) break;
+    }
+    if(items.length) renderPeek(movie.el, items);
   }catch(e){}
 }
 async function probe(url,opts){const cors=opts&&opts.cors;const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),5000);try{if(cors){try{const head=await fetch(url,{method:'HEAD',mode:'cors',cache:'no-store',signal:ctl.signal});return head.ok;}catch{const res=await fetch(url,{method:'GET',mode:'cors',cache:'no-store',signal:ctl.signal});return res.ok;}}await fetch(url,{mode:'no-cors',cache:'no-store',signal:ctl.signal});return true;}catch{return false;}finally{clearTimeout(timer);}}
@@ -112,11 +151,11 @@ async function refresh(){
     card.el.querySelector('.host').textContent=new URL(card.svc.url).host;
     setStatus(card.el,'check','检测中');
   }
-  await Promise.all([Promise.all(cards.map(check)),loadHeadlines()]);
+  await Promise.all([Promise.all(cards.map(check)),loadHeadlines().then(loadMoviePeek)]);
   document.getElementById('stamp').textContent='最后检测 '+new Date().toLocaleTimeString('zh-CN',{hour12:false});
 }
 brandBtn.addEventListener('click',refresh);
-loadHeadlines();
+loadHeadlines().then(loadMoviePeek);
 refresh();
 const KEY='forcine-theme';const themeBtn=document.getElementById('theme');const saved=localStorage.getItem(KEY);if(saved)document.documentElement.dataset.theme=saved;
 function isDark(){const root=document.documentElement;return root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
