@@ -6,9 +6,135 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="readcine 各站入口：片库、银幕新讯、AI 情报站。">
 <title>readcine · 导航</title>
+<style>
+  :root {
+    --bg: #f4f5f2;
+    --bg-grad: radial-gradient(1200px 600px at 50% -10%, #e9ebe4 0%, transparent 70%);
+    --card: #ffffff;
+    --card-hover: #ffffff;
+    --border: #dcdfd9;
+    --border-hover: #c3c7bf;
+    --text: #14181f;
+    --muted: #565f6b;
+    --faint: #8b939c;
+    --accent: #c8722c;
+    --shadow: 0 1px 2px rgba(20,23,28,.06), 0 8px 24px rgba(20,23,28,.06);
+    --shadow-hover: 0 2px 4px rgba(20,23,28,.08), 0 16px 40px rgba(20,23,28,.12);
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0c0f14;
+      --bg-grad: radial-gradient(1200px 600px at 50% -10%, #171c22 0%, transparent 70%);
+      --card: #12161d;
+      --card-hover: #171c24;
+      --border: #262b33;
+      --border-hover: #3a414b;
+      --text: #e7ebe6;
+      --muted: #9aa3ab;
+      --faint: #6b7480;
+      --accent: #e08a45;
+      --shadow: none;
+      --shadow-hover: 0 12px 32px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0c0f14;
+    --bg-grad: radial-gradient(1200px 600px at 50% -10%, #171c22 0%, transparent 70%);
+    --card: #12161d;
+    --card-hover: #171c24;
+    --border: #262b33;
+    --border-hover: #3a414b;
+    --text: #e7ebe6;
+    --muted: #9aa3ab;
+    --faint: #6b7480;
+    --accent: #e08a45;
+    --shadow: none;
+    --shadow-hover: 0 12px 32px rgba(0,0,0,.4);
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f5f2;
+    --bg-grad: radial-gradient(1200px 600px at 50% -10%, #e9ebe4 0%, transparent 70%);
+    --card: #ffffff;
+    --card-hover: #ffffff;
+    --border: #dcdfd9;
+    --border-hover: #c3c7bf;
+    --text: #14181f;
+    --muted: #565f6b;
+    --faint: #8b939c;
+    --accent: #c8722c;
+    --shadow: 0 1px 2px rgba(20,23,28,.06), 0 8px 24px rgba(20,23,28,.06);
+    --shadow-hover: 0 2px 4px rgba(20,23,28,.08), 0 16px 40px rgba(20,23,28,.12);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); background-image: var(--bg-grad);
+    background-repeat: no-repeat; color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 72px 24px 56px; }
+  header { margin-bottom: 40px; }
+  .brand { margin: 0 0 8px; }
+  .brand button { font: inherit; font-size: 30px; font-weight: 650; letter-spacing: -.02em; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  .brand .dot { color: var(--accent); }
+  .tagline { color: var(--muted); font-size: 15px; margin: 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; align-items: start; }
+  .card { display: block; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; text-decoration: none; color: inherit; box-shadow: var(--shadow); }
+  .card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .name { font-size: 16px; font-weight: 600; }
+  .status { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--faint); }
+  .led { width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
+  .status[data-s="up"] .led { background: #35c07a; }
+  .status[data-s="up"] { color: #35c07a; }
+  .desc { font-size: 13px; line-height: 1.55; color: var(--muted); margin: 0 0 12px; }
+  .peek { list-style: none; margin: 0 0 14px; padding: 0; }
+  .peek li { display: grid; grid-template-columns: auto 1fr; gap: 8px; font-size: 13px; }
+  .peek .when { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+  .host { font-family: var(--mono); font-size: 11.5px; color: var(--faint); }
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--faint); display: flex; gap: 8px 16px; align-items: center; }
+  footer .sep { flex: 1 }
+  #theme { background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--muted); font: inherit; font-size: 12px; padding: 4px 10px; cursor: pointer; }
+</style>
 </head>
 <body>
-<p>redirecting</p>
-<script>location.replace('/');</script>
+<div class="wrap">
+  <header>
+    <h1 class="brand"><button id="brand-btn" type="button">readcine<span class="dot">.</span></button></h1>
+    <p class="tagline">有新摘要才显在卡片里 · 点卡片进站 · 点标题刷新状态</p>
+  </header>
+  <main class="grid" id="grid"></main>
+  <footer><span id="stamp">—</span><span class="sep"></span><button id="theme" type="button">浅色</button></footer>
+</div>
+<script>
+const SERVICES = [
+  { id: 'movie', icon: '🎬', name: '电影资源库', desc: '片库检索与更新。', url: 'https://movieupdate.forcine.dpdns.org', fallback: 'https://movie-readcine.forcine.dpdns.org', live: ['https://movieupdate.forcine.dpdns.org/api/movies?group=1','https://movie-readcine.forcine.dpdns.org/api/movies?group=1'] },
+  { id: 'news', icon: '🏆', name: '银幕新讯', desc: '作者向新品、A类电影节与奖讯。不收爆米花。', url: 'https://news.readcine.com', fallback: 'https://xmcter.github.io/movie-awards-site/', cors: true },
+  { id: 'ai', icon: '📡', name: 'AI 情报站', desc: 'AI 工具与 Agent 更新，中文提炼。', url: 'https://ai.readcine.com', fallback: 'https://ai-readcine.forcine.dpdns.org', cors: true },
+];
+const grid = document.getElementById('grid');
+function esc(s){const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
+function peekHtml(items){if(!items||!items.length)return '';return '<ul class="peek">'+items.slice(0,3).map(it=>'<li><span class="when">'+esc(it.when||'')+'</span><span>'+esc(it.text||'')+'</span></li>').join('')+'</ul>';}
+function renderPeek(el,items){const host=el.querySelector('.host');const old=el.querySelector('.peek');if(old)old.remove();if(!items||!items.length)return;const wrap=document.createElement('div');wrap.innerHTML=peekHtml(items);host.before(wrap.firstElementChild);}
+const cards=SERVICES.map(svc=>{const a=document.createElement('a');a.className='card';a.href=svc.url;a.rel='noopener';a.innerHTML='<div class="card-top"><span class="icon">'+svc.icon+'</span><span class="name">'+svc.name+'</span><span class="status" data-s="check"><span class="led"></span><span class="txt">检测中</span></span></div><p class="desc">'+svc.desc+'</p><div class="host">'+new URL(svc.url).host+'</div>';grid.appendChild(a);return {svc,el:a};});
+const SEEN_KEY='readcine-headlines-seen';
+function fingerprint(items){return JSON.stringify((items||[]).slice(0,3).map(it=>[it.when||'',it.text||'']));}
+function readSeen(){try{const raw=localStorage.getItem(SEEN_KEY);const obj=raw?JSON.parse(raw):{};return obj&&typeof obj==='object'?obj:{};}catch{return {};}}
+function writeSeen(seen){try{localStorage.setItem(SEEN_KEY,JSON.stringify(seen));}catch{}}
+function fmtWhen(ts){const m=String(ts||'').match(/(\d{4})-(\d{2})-(\d{2})/);return m?(m[2]+'-'+m[3]):'';}
+async function fetchLiveMovies(urls){const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),8000);try{for(const url of urls){try{const res=await fetch(url,{mode:'cors',cache:'no-store',signal:ctl.signal});if(!res.ok)continue;const d=await res.json();const rows=Array.isArray(d.data)?d.data:[];const junk=/^(未命名|无名|无题|untitled|none|\d{1,3}|[A-Za-z])$/i;const items=rows.map(r=>({when:fmtWhen(r.posted_at||r.updated_at),text:String(r.title||'').trim()})).filter(it=>it.text&&!junk.test(it.text)&&it.text.length>=2).slice(0,3);if(items.length)return items;}catch{}}}finally{clearTimeout(timer);}return null;}
+async function loadHeadlines(){try{const res=await fetch('headlines.json?v='+Date.now(),{cache:'no-store'});if(!res.ok)return;const data=await res.json();const movieCard=cards.find(c=>c.svc.id==='movie');if(movieCard&&movieCard.svc.live){const live=await fetchLiveMovies(movieCard.svc.live);if(live&&live.length)data.movie=live;}const seen=readSeen();const next=Object.assign({},seen);let anyFresh=false;for(const {svc,el} of cards){const items=data[svc.id]||[];const fp=fingerprint(items);const fresh=items.length>0&&fp!==seen[svc.id];renderPeek(el,fresh?items:[]);if(fresh){next[svc.id]=fp;anyFresh=true;}}writeSeen(next);const stamp=document.getElementById('stamp');if(anyFresh)stamp.dataset.head='有新入库';else delete stamp.dataset.head;}catch{}}
+async function probe(url,opts){const cors=opts&&opts.cors;const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),6000);try{if(cors){try{const head=await fetch(url,{method:'HEAD',mode:'cors',cache:'no-store',signal:ctl.signal});return head.ok;}catch{const res=await fetch(url,{method:'GET',mode:'cors',cache:'no-store',signal:ctl.signal});return res.ok;}}await fetch(url,{mode:'no-cors',cache:'no-store',signal:ctl.signal});return true;}catch{return false;}finally{clearTimeout(timer);}}
+function setStatus(el,state,text){const s=el.querySelector('.status');s.dataset.s=state;s.querySelector('.txt').textContent=text;}
+async function check(card){const svc=card.svc,el=card.el;if(await probe(svc.url,{cors:!!svc.cors})){setStatus(el,'up','在线');return;}if(svc.fallback&&(await probe(svc.fallback,{cors:!!svc.cors})||await probe(svc.fallback))){el.href=svc.fallback;el.querySelector('.host').textContent=new URL(svc.fallback).host;setStatus(el,'up','在线');return;}el.classList.add('down');setStatus(el,'down','离线');}
+const brandBtn=document.getElementById('brand-btn');
+async function refresh(){for(const card of cards){card.el.href=card.svc.url;card.el.querySelector('.host').textContent=new URL(card.svc.url).host;setStatus(card.el,'check','检测中');}await Promise.all([Promise.all(cards.map(check)),loadHeadlines()]);const head=document.getElementById('stamp').dataset.head;document.getElementById('stamp').textContent=(head?head+' · ':'')+'最后检测 '+new Date().toLocaleTimeString('zh-CN',{hour12:false});}
+brandBtn.addEventListener('click',refresh);refresh();
+const KEY='forcine-theme';const themeBtn=document.getElementById('theme');const saved=localStorage.getItem(KEY);if(saved)document.documentElement.dataset.theme=saved;
+function isDark(){const root=document.documentElement;return root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+function syncThemeLabel(){themeBtn.textContent=isDark()?'浅色':'深色';}
+syncThemeLabel();
+themeBtn.onclick=()=>{document.documentElement.dataset.theme=isDark()?'light':'dark';localStorage.setItem(KEY,document.documentElement.dataset.theme);syncThemeLabel();};
+</script>
 </body>
 </html>
