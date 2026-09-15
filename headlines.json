@@ -11,8 +11,8 @@
     { "when": "09-14", "text": "李沧东《可能的爱情》申奥 + Netflix" }
   ],
   "ai": [
-    { "when": "09-11", "text": "Grok Build 1.0.30：会话头部 UI 与计时" },
-    { "when": "09-11", "text": "OpenAI：十亿 ChatGPT 用户扩展存储" },
-    { "when": "09-10", "text": "OpenAI：API 密钥过期控制" }
+    { "when": "09-05", "text": "Grok Bot 再次重置全体用量上限" },
+    { "when": "09-01", "text": "马斯克：Grok / Bot 免费 token 再重置" },
+    { "when": "09-11", "text": "Grok Build 1.0.30：会话头部 UI 与计时" }
   ]
 }
