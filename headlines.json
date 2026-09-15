@@ -11,8 +11,8 @@
     { "when": "09-14", "text": "博伊尔《墨》威尼斯开幕后转院线" }
   ],
   "ai": [
-    { "when": "09-11", "text": "Grok Build 1.0.30：会话头部 UI 与计时" },
-    { "when": "09-05", "text": "Grok Bot 再次重置全体用量上限" },
-    { "when": "09-01", "text": "马斯克：Grok / Bot 免费 token 再重置" }
+    { "when": "09-14", "text": "马斯克：Grok 4.8 本周结束训练进 RL" },
+    { "when": "09-13", "text": "Grok 4.7 超过 9/12 窗口仍未上架" },
+    { "when": "09-11", "text": "Grok Build 1.0.30：会话头部 UI 与计时" }
   ]
 }
