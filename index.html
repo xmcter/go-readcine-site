@@ -57,18 +57,29 @@
 <script>
 const SERVICES = [
   { id: 'movie', icon: '🎬', name: '电影资源库', desc: '片库检索与更新。', url: 'https://movieupdate.forcine.dpdns.org', fallback: 'https://movie-readcine.forcine.dpdns.org' },
-  { id: 'news', icon: '🏆', name: '银幕新讯', desc: '作者向新品、A类电影节与奖讯。不收爆米花。', url: 'https://news.readcine.com', fallback: 'https://xmcter.github.io/movie-awards-site/', cors: true },
+  { id: 'news', icon: '🏆', name: '银幕新讯', desc: '作者向新片、A类电影节与奖讯。不收爆米花。', url: 'https://news.readcine.com', fallback: 'https://xmcter.github.io/movie-awards-site/', cors: true },
   { id: 'ai', icon: '📡', name: 'AI 情报站', desc: 'AI 工具与 Agent 更新，中文提炼。', url: 'https://ai.readcine.com', fallback: 'https://ai-readcine.forcine.dpdns.org', cors: true }
 ];
 const grid = document.getElementById('grid');
 function esc(s){const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
+function whenKey(w){
+  const s=String(w||'').trim();
+  const m=s.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
+  if(m) return m[1]+String(m[2]).padStart(2,'0')+String(m[3]).padStart(2,'0');
+  const md=s.match(/(\d{1,2})[-\/.](\d{1,2})/);
+  if(md) return '2026'+String(md[1]).padStart(2,'0')+String(md[2]).padStart(2,'0');
+  return '00000000';
+}
+function newestFirst(items){
+  return (items||[]).slice().sort((a,b)=>whenKey(b.when).localeCompare(whenKey(a.when)));
+}
 function peekHtml(items){return '<ul class="peek">'+items.slice(0,3).map(it=>'<li><span class="when">'+esc(it.when||'')+'</span><span>'+esc(it.text||'')+'</span></li>').join('')+'</ul>';}
 function renderPeek(el,items){
   if(!items||!items.length) return;
   const host=el.querySelector('.host');
   const old=el.querySelector('.peek');
   const wrap=document.createElement('div');
-  wrap.innerHTML=peekHtml(items);
+  wrap.innerHTML=peekHtml(newestFirst(items));
   const node=wrap.firstElementChild;
   if(old) old.replaceWith(node);
   else host.before(node);
