@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="CodingPlan Deals · AI 编程助手与 Cloud IDE 套餐折扣雷达，实时按时间线监控官方促销、优惠码与活动状态。">
+<title>CodingPlan Deals · 编程套餐折扣时间线</title>
+<style>
+  :root {
+    --bg: #f4f5f2;
+    --bg-grad: radial-gradient(1200px 600px at 50% -10%, #e9ebe4 0%, transparent 70%);
+    --card: #ffffff;
+    --card-hover: #ffffff;
+    --border: #dcdfd9;
+    --border-hover: #c3c7bf;
+    --text: #14181f;
+    --muted: #565f6b;
+    --faint: #8b939c;
+    --accent: #c8722c;
+    --accent-bg: rgba(200, 114, 44, 0.08);
+    --accent-border: rgba(200, 114, 44, 0.25);
+    --success: #238636;
+    --success-bg: rgba(35, 134, 54, 0.08);
+    --success-border: rgba(35, 134, 54, 0.25);
+    --expired: #8b939c;
+    --expired-bg: rgba(139, 147, 156, 0.1);
+    --expired-border: rgba(139, 147, 156, 0.25);
+    --shadow: 0 1px 2px rgba(20,23,28,.06), 0 8px 24px rgba(20,23,28,.06);
+    --shadow-hover: 0 2px 4px rgba(20,23,28,.08), 0 16px 40px rgba(20,23,28,.12);
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0c0f14;
+      --bg-grad: radial-gradient(1200px 600px at 50% -10%, #171c22 0%, transparent 70%);
+      --card: #12161d;
+      --card-hover: #171c24;
+      --border: #262b33;
+      --border-hover: #3a414b;
+      --text: #e7ebe6;
+      --muted: #9aa3ab;
+      --faint: #6b7480;
+      --accent: #e08a45;
+      --accent-bg: rgba(224, 138, 69, 0.12);
+      --accent-border: rgba(224, 138, 69, 0.3);
+      --success: #3fb950;
+      --success-bg: rgba(63, 185, 80, 0.12);
+      --success-border: rgba(63, 185, 80, 0.3);
+      --expired: #6b7480;
+      --expired-bg: rgba(107, 116, 128, 0.15);
+      --expired-border: rgba(107, 116, 128, 0.3);
+      --shadow: none;
+      --shadow-hover: 0 12px 32px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0c0f14;
+    --bg-grad: radial-gradient(1200px 600px at 50% -10%, #171c22 0%, transparent 70%);
+    --card: #12161d;
+    --card-hover: #171c24;
+    --border: #262b33;
+    --border-hover: #3a414b;
+    --text: #e7ebe6;
+    --muted: #9aa3ab;
+    --faint: #6b7480;
+    --accent: #e08a45;
+    --accent-bg: rgba(224, 138, 69, 0.12);
+    --accent-border: rgba(224, 138, 69, 0.3);
+    --success: #3fb950;
+    --success-bg: rgba(63, 185, 80, 0.12);
+    --success-border: rgba(63, 185, 80, 0.3);
+    --expired: #6b7480;
+    --expired-bg: rgba(107, 116, 128, 0.15);
+    --expired-border: rgba(107, 116, 128, 0.3);
+    --shadow: none;
+    --shadow-hover: 0 12px 32px rgba(0,0,0,.4);
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f5f2;
+    --bg-grad: radial-gradient(1200px 600px at 50% -10%, #e9ebe4 0%, transparent 70%);
+    --card: #ffffff;
+    --card-hover: #ffffff;
+    --border: #dcdfd9;
+    --border-hover: #c3c7bf;
+    --text: #14181f;
+    --muted: #565f6b;
+    --faint: #8b939c;
+    --accent: #c8722c;
+    --accent-bg: rgba(200, 114, 44, 0.08);
+    --accent-border: rgba(200, 114, 44, 0.25);
+    --success: #238636;
+    --success-bg: rgba(35, 134, 54, 0.08);
+    --success-border: rgba(35, 134, 54, 0.25);
+    --expired: #8b939c;
+    --expired-bg: rgba(139, 147, 156, 0.1);
+    --expired-border: rgba(139, 147, 156, 0.25);
+    --shadow: 0 1px 2px rgba(20,23,28,.06), 0 8px 24px rgba(20,23,28,.06);
+    --shadow-hover: 0 2px 4px rgba(20,23,28,.08), 0 16px 40px rgba(20,23,28,.12);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    background-image: var(--bg-grad);
+    background-repeat: no-repeat;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+                 "Microsoft YaHei", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 64px 24px 56px; }
+
+  header { margin-bottom: 28px; }
+  .brand { margin: 0 0 8px; }
+  .brand button {
+    font: inherit;
+    font-size: 30px; font-weight: 650; letter-spacing: -.02em;
+    color: inherit;
+    background: none; border: 0; padding: 0;
+    cursor: pointer;
+    transition: opacity .15s ease;
+  }
+  .brand button:hover { opacity: .75; }
+  .brand button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+  .brand .dot { color: var(--accent); }
+  .brand button.busy .dot {
+    display: inline-block;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .tagline { color: var(--muted); font-size: 14.5px; margin: 0; line-height: 1.5; }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 14px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+  }
+  .filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .pill {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .pill:hover {
+    border-color: var(--border-hover);
+    color: var(--text);
+  }
+  .pill.active {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+  }
+  .search-wrap {
+    position: relative;
+    min-width: 180px;
+  }
+  .search-input {
+    width: 100%;
+    background: rgba(125,135,145, 0.08);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    color: var(--text);
+    outline: none;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .search-input:focus {
+    border-color: var(--accent);
+    background: var(--card);
+  }
+  .search-input::placeholder {
+    color: var(--faint);
+  }
+
+  /* Timeline Container */
+  .timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Timeline Card */
+  .timeline-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .timeline-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* Expired Card Styling */
+  .timeline-card.is-expired {
+    opacity: 0.65;
+    background: rgba(125,135,145, 0.03);
+    border-style: dashed;
+  }
+  .timeline-card.is-expired:hover {
+    opacity: 0.9;
+    transform: none;
+  }
+  .timeline-card.is-expired .deal-title {
+    color: var(--muted);
+  }
+
+  .card-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .tool-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tool-icon { font-size: 19px; line-height: 1; }
+  .tool-name { font-size: 15px; font-weight: 650; }
+  .tool-cat {
+    font-size: 10.5px;
+    color: var(--faint);
+    background: rgba(125,135,145, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    text-transform: uppercase;
+  }
+  .date-badge {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--faint);
+    font-weight: 550;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .deal-title {
+    font-size: 15.5px;
+    font-weight: 650;
+    line-height: 1.45;
+    color: var(--text);
+    margin: 0 0 10px;
+  }
+
+  .tag-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2.5px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+  .badge.primary {
+    background: var(--accent-bg);
+    color: var(--accent);
+    border: 1px solid var(--accent-border);
+  }
+  .badge.success {
+    background: var(--success-bg);
+    color: var(--success);
+    border: 1px solid var(--success-border);
+  }
+  .badge.expired {
+    background: var(--expired-bg);
+    color: var(--expired);
+    border: 1px solid var(--expired-border);
+    font-weight: 650;
+  }
+  .discount-val {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 650;
+    color: var(--accent);
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-border);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+  .timeline-card.is-expired .discount-val {
+    color: var(--muted);
+    background: var(--expired-bg);
+    border-color: var(--expired-border);
+    text-decoration: line-through;
+  }
+
+  .deal-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+    margin: 0 0 14px;
+  }
+
+  .card-footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    font-size: 12px;
+  }
+  .expiry-info {
+    color: var(--faint);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .expiry-info.is-ended {
+    color: var(--expired);
+    font-weight: 500;
+  }
+  .actions-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .coupon-btn {
+    background: rgba(125,135,145, 0.08);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--text);
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .coupon-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .deal-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 12.5px;
+  }
+  .deal-link:hover {
+    text-decoration: underline;
+  }
+  .timeline-card.is-expired .deal-link {
+    color: var(--muted);
+  }
+
+  /* Empty State */
+  .empty {
+    text-align: center;
+    padding: 56px 0;
+    color: var(--muted);
+    font-size: 14px;
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 48px; padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--faint);
+    display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+  }
+  footer a { color: inherit; text-decoration: none; }
+  footer a:hover { color: var(--text); }
+  footer .sep { flex: 1; }
+  #theme-btn {
+    background: none; border: 1px solid var(--border); border-radius: 7px;
+    color: var(--muted); font: inherit; font-size: 12px;
+    padding: 4px 10px; cursor: pointer;
+  }
+  #theme-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 44px 16px 40px; }
+    .brand button { font-size: 24px; }
+    .toolbar { flex-direction: column; align-items: stretch; }
+    .search-wrap { width: 100%; }
+    .card-footer-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="brand">
+      <button id="brand-btn" type="button" title="点击刷新折扣时间线">
+        CodingPlan Deals<span class="dot">.</span>
+      </button>
+    </h1>
+    <p class="tagline">AI 编程助手与 Cloud IDE 套餐折扣雷达 · 实时时间线与优惠情报</p>
+  </header>
+
+  <!-- 筛选与搜索工具条 -->
+  <div class="toolbar">
+    <div class="filter-pills" id="filter-pills">
+      <button class="pill active" data-filter="all">全部时间线</button>
+      <button class="pill" data-filter="active">🔥 正在进行</button>
+      <button class="pill" data-filter="expired">⏳ 已过期</button>
+      <button class="pill" data-filter="cat-cli">CLI Agent</button>
+      <button class="pill" data-filter="cat-ide">AI IDE</button>
+      <button class="pill" data-filter="cat-cloud">云端 / Cloud</button>
+      <button class="pill" data-filter="cat-api">API 推理</button>
+    </div>
+    <div class="search-wrap">
+      <input type="text" id="search-input" class="search-input" placeholder="搜索工具、标题、优惠...">
+    </div>
+  </div>
+
+  <!-- 时间线信息流 -->
+  <main class="timeline" id="deals-timeline">
+    <!-- Timeline Cards generated via JS -->
+  </main>
+
+  <footer>
+    <span id="stamp">加载中...</span>
+    <span class="sep"></span>
+    <a href="https://go.readcine.com" target="_blank" rel="noopener">← 返回 go.readcine 导航</a>
+    <span style="opacity: .3;">|</span>
+    <button id="theme-btn" type="button">主题</button>
+  </footer>
+</div>
+
+<script>
+const STORAGE_THEME = 'codingplan_theme';
+
+let gDeals = [];
+let gMeta = {};
+let gCurrentFilter = 'all';
+let gSearchQuery = '';
+
+// 判断是否已过期
+function checkExpired(deal) {
+  if (deal.badge_type === 'expired' || deal.badge === '已结束' || deal.is_expired) {
+    return true;
+  }
+  if (!deal.expires) return false;
+  // 匹配标准日期 YYYY-MM-DD
+  const m = String(deal.expires).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) {
+    const today = new Date().toISOString().slice(0, 10);
+    return deal.expires < today;
+  }
+  return false;
+}
+
+// 格式化日期显示
+function formatDate(dStr) {
+  if (!dStr) return '';
+  const m = String(dStr).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) {
+    return `${m[2]}-${m[3]}`;
+  }
+  return dStr;
+}
+
+// 渲染时间线
+function render() {
+  const container = document.getElementById('deals-timeline');
+  container.innerHTML = '';
+
+  // 1. 过滤
+  const filtered = gDeals.filter(d => {
+    const expired = checkExpired(d);
+
+    // 搜索过滤
+    if (gSearchQuery) {
+      const q = gSearchQuery.toLowerCase();
+      const match = d.title.toLowerCase().includes(q) ||
+                    d.tool_name.toLowerCase().includes(q) ||
+                    d.desc.toLowerCase().includes(q) ||
+                    d.discount_tag.toLowerCase().includes(q);
+      if (!match) return false;
+    }
+
+    // 标签过滤
+    if (gCurrentFilter === 'all') return true;
+    if (gCurrentFilter === 'active') return !expired;
+    if (gCurrentFilter === 'expired') return expired;
+    if (gCurrentFilter.startsWith('cat-')) {
+      const cat = gCurrentFilter.replace('cat-', '');
+      return d.category === cat;
+    }
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty">暂无符合条件的折扣记录</div>';
+    return;
+  }
+
+  // 2. 按时间降序（最新在上）
+  filtered.sort((a, b) => {
+    const dateA = a.date || '1970-01-01';
+    const dateB = b.date || '1970-01-01';
+    return dateB.localeCompare(dateA);
+  });
+
+  // 3. 构建卡片
+  filtered.forEach(d => {
+    const card = document.createElement('article');
+    const expired = checkExpired(d);
+    card.className = `timeline-card ${expired ? 'is-expired' : ''}`;
+
+    let couponHtml = '';
+    if (d.coupon && !expired) {
+      couponHtml = `<button class="coupon-btn" onclick="copyCoupon('${d.coupon}', this)" title="点击复制折扣码">码: ${d.coupon}</button>`;
+    }
+
+    // 状态与标签
+    let statusBadgeHtml = '';
+    if (expired) {
+      statusBadgeHtml = `<span class="badge expired">已过期</span>`;
+    } else if (d.badge_type === 'success') {
+      statusBadgeHtml = `<span class="badge success">${d.badge}</span>`;
+    } else {
+      statusBadgeHtml = `<span class="badge primary">${d.badge}</span>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-header-row">
+        <div class="tool-info">
+          <span class="tool-icon">${d.icon || '🏷️'}</span>
+          <span class="tool-name">${d.tool_name}</span>
+          <span class="tool-cat">${d.category}</span>
+        </div>
+        <div class="date-badge">
+          <span>📅</span>
+          <span>${d.date || '近期'}</span>
+        </div>
+      </div>
+      <h3 class="deal-title">${d.title}</h3>
+      <div class="tag-row">
+        <span class="discount-val">${d.discount_tag}</span>
+        ${statusBadgeHtml}
+      </div>
+      <p class="deal-desc">${d.desc}</p>
+      <div class="card-footer-row">
+        <div class="expiry-info ${expired ? 'is-ended' : ''}">
+          <span>截止: ${d.expires}</span>
+          ${expired ? '<span style="font-weight:600;">(已结束)</span>' : ''}
+        </div>
+        <div class="actions-row">
+          ${couponHtml}
+          <a href="${d.url}" target="_blank" rel="noopener" class="deal-link">
+            ${expired ? '查看历史详情 →' : '直达特惠 →'}
+          </a>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// 复制优惠码
+window.copyCoupon = function(code, btn) {
+  navigator.clipboard.writeText(code).then(() => {
+    const old = btn.textContent;
+    btn.textContent = '已复制!';
+    btn.style.borderColor = 'var(--success)';
+    btn.style.color = 'var(--success)';
+    setTimeout(() => {
+      btn.textContent = old;
+      btn.style.borderColor = '';
+      btn.style.color = '';
+    }, 1500);
+  });
+};
+
+// 数据加载与刷新
+async function loadData() {
+  const brandBtn = document.getElementById('brand-btn');
+  brandBtn.classList.add('busy');
+  try {
+    const res = await fetch(`deals.json?t=${Date.now()}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    gMeta = json.meta || {};
+    gDeals = json.deals || [];
+    render();
+    const activeCount = gDeals.filter(d => !checkExpired(d)).length;
+    const expiredCount = gDeals.filter(d => checkExpired(d)).length;
+    document.getElementById('stamp').textContent =
+      `更新于 ${gMeta.last_updated || '刚刚'} · ${activeCount} 条进行中 / ${expiredCount} 条已过期`;
+  } catch (err) {
+    console.error('加载数据失败', err);
+    document.getElementById('stamp').textContent = '数据加载失败，点击标题重试';
+  } finally {
+    brandBtn.classList.remove('busy');
+  }
+}
+
+// 绑定事件
+document.getElementById('brand-btn').addEventListener('click', loadData);
+
+document.getElementById('filter-pills').addEventListener('click', e => {
+  if (!e.target.classList.contains('pill')) return;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  e.target.classList.add('active');
+  gCurrentFilter = e.target.dataset.filter;
+  render();
+});
+
+document.getElementById('search-input').addEventListener('input', e => {
+  gSearchQuery = e.target.value.trim();
+  render();
+});
+
+// 主题切换
+const themeBtn = document.getElementById('theme-btn');
+const savedTheme = localStorage.getItem(STORAGE_THEME);
+if (savedTheme) {
+  document.documentElement.dataset.theme = savedTheme;
+}
+
+themeBtn.addEventListener('click', () => {
+  const root = document.documentElement;
+  const isDark = root.dataset.theme
+    ? root.dataset.theme === 'dark'
+    : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = isDark ? 'light' : 'dark';
+  localStorage.setItem(STORAGE_THEME, root.dataset.theme);
+});
+
+// 初始化
+loadData();
+</script>
+</body>
+</html>
