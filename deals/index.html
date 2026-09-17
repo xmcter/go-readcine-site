@@ -439,10 +439,10 @@
       <button class="pill active" data-filter="all">全部时间线</button>
       <button class="pill" data-filter="active">🔥 正在进行</button>
       <button class="pill" data-filter="expired">⏳ 已过期</button>
-      <button class="pill" data-filter="cat-cli">CLI Agent</button>
-      <button class="pill" data-filter="cat-ide">AI IDE</button>
-      <button class="pill" data-filter="cat-cloud">云端 / Cloud</button>
-      <button class="pill" data-filter="cat-api">API 推理</button>
+      <button class="pill" data-filter="cat-plan">📦 Coding Plan 套餐</button>
+      <button class="pill" data-filter="cat-cli">⚡ 终端 Agent</button>
+      <button class="pill" data-filter="cat-ide">💻 AI IDE</button>
+      <button class="pill" data-filter="cat-api">🚀 API / Token</button>
     </div>
     <div class="search-wrap">
       <input type="text" id="search-input" class="search-input" placeholder="搜索工具、标题、优惠...">
@@ -495,6 +495,14 @@ function formatDate(dStr) {
   }
   return dStr;
 }
+
+const CAT_LABELS = {
+  'plan': 'Coding Plan',
+  'cli': 'CLI Agent',
+  'ide': 'AI IDE',
+  'api': 'API / Token',
+  'cloud': '云端开发'
+};
 
 // 渲染时间线
 function render() {
@@ -564,7 +572,7 @@ function render() {
         <div class="tool-info">
           <span class="tool-icon">${d.icon || '🏷️'}</span>
           <span class="tool-name">${d.tool_name}</span>
-          <span class="tool-cat">${d.category}</span>
+          <span class="tool-cat">${CAT_LABELS[d.category] || d.category}</span>
         </div>
         <div class="date-badge">
           <span>📅</span>
