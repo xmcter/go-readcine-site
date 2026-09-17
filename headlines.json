@@ -14,5 +14,10 @@
     { "when": "09-15", "text": "Cline Desktop 0.0.28 + CLI 3.0.62" },
     { "when": "09-15", "text": "Anthropic 公布 agent 爆炸半径限制" },
     { "when": "09-14", "text": "马斯克：Grok 4.8 本周结束训练进 RL" }
+  ],
+  "deals": [
+    { "when": "09-17", "text": "Command Code: Claude 缓存降价 90%" },
+    { "when": "09-17", "text": "Cloud Code: GCP 赠金 $300 + 每日免费" },
+    { "when": "09-17", "text": "Trae 公测全免 · Cursor 年付 8 折" }
   ]
 }
