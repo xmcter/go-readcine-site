@@ -430,7 +430,7 @@
         CodingPlan Deals<span class="dot">.</span>
       </button>
     </h1>
-    <p class="tagline">AI 编程助手与 Cloud IDE 套餐折扣雷达 · 实时时间线与优惠情报</p>
+    <p class="tagline">全球主流 AI 编程助手与 Cloud IDE 折扣雷达 · 实时时间线与优惠情报</p>
   </header>
 
   <!-- 筛选与搜索工具条 -->
@@ -439,10 +439,10 @@
       <button class="pill active" data-filter="all">全部时间线</button>
       <button class="pill" data-filter="active">🔥 正在进行</button>
       <button class="pill" data-filter="expired">⏳ 已过期</button>
-      <button class="pill" data-filter="cat-plan">📦 Coding Plan 套餐</button>
       <button class="pill" data-filter="cat-cli">⚡ 终端 Agent</button>
-      <button class="pill" data-filter="cat-ide">💻 AI IDE</button>
-      <button class="pill" data-filter="cat-api">🚀 API / Token</button>
+      <button class="pill" data-filter="cat-ide">💻 AI IDE / 插件</button>
+      <button class="pill" data-filter="cat-cloud">☁️ 云端开发</button>
+      <button class="pill" data-filter="cat-api">🔀 模型网关</button>
     </div>
     <div class="search-wrap">
       <input type="text" id="search-input" class="search-input" placeholder="搜索工具、标题、优惠...">
@@ -497,11 +497,10 @@ function formatDate(dStr) {
 }
 
 const CAT_LABELS = {
-  'plan': 'Coding Plan',
   'cli': 'CLI Agent',
-  'ide': 'AI IDE',
-  'api': 'API / Token',
-  'cloud': '云端开发'
+  'ide': 'AI IDE / 插件',
+  'cloud': '云端开发',
+  'api': '模型网关'
 };
 
 // 渲染时间线
