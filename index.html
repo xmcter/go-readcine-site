@@ -34,6 +34,7 @@
   .status { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--faint); }
   .led { width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
   .status[data-s="up"] .led { background: #35c07a; } .status[data-s="up"] { color: #35c07a; }
+  .status[data-s="up"], .status[data-s="check"] { visibility: hidden; }
   .status[data-s="down"] .led { background: #e0574a; } .status[data-s="down"] { color: #e0574a; }
   .desc { font-size: 13px; line-height: 1.55; color: var(--muted); margin: 0 0 12px; }
   .peek { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
@@ -67,9 +68,9 @@ const grid = document.getElementById('grid');
 function esc(s){const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
 function whenKey(w){
   const s=String(w||'').trim();
-  const m=s.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
+  const m=s.match(/(\d{4})[-\/\.](\d{1,2})[-\/\.](\d{1,2})/);
   if(m) return m[1]+String(m[2]).padStart(2,'0')+String(m[3]).padStart(2,'0');
-  const md=s.match(/(\d{1,2})[-\/.](\d{1,2})/);
+  const md=s.match(/(\d{1,2})[-\/\.](\d{1,2})/);
   if(md) return '2026'+String(md[1]).padStart(2,'0')+String(md[2]).padStart(2,'0');
   return '00000000';
 }
@@ -105,7 +106,7 @@ function isJunkTitle(t){
 const cards=SERVICES.map(svc=>{
   const a=document.createElement('a');
   a.className='card'; a.href=svc.url; a.rel='noopener';
-  a.innerHTML='<div class="card-top"><span class="icon">'+svc.icon+'</span><span class="name">'+svc.name+'</span><span class="status" data-s="check"><span class="led"></span><span class="txt">检测中</span></span></div><p class="desc">'+svc.desc+'</p><div class="host">'+new URL(svc.url).host+'</div>';
+  a.innerHTML='<div class="card-top"><span class="icon">'+svc.icon+'</span><span class="name">'+svc.name+'</span><span class="status" data-s="check"><span class="led"></span><span class="txt"></span></span></div><p class="desc">'+svc.desc+'</p><div class="host">'+new URL(svc.url).host+'</div>';
   grid.appendChild(a);
   return {svc,el:a};
 });
@@ -144,13 +145,18 @@ async function loadMoviePeek(){
 }
 async function probe(url,opts){const cors=opts&&opts.cors;const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),5000);try{if(cors){try{const head=await fetch(url,{method:'HEAD',mode:'cors',cache:'no-store',signal:ctl.signal});return head.ok;}catch{const res=await fetch(url,{method:'GET',mode:'cors',cache:'no-store',signal:ctl.signal});return res.ok;}}await fetch(url,{mode:'no-cors',cache:'no-store',signal:ctl.signal});return true;}catch{return false;}finally{clearTimeout(timer);}}
 function setStatus(el,state,text){const s=el.querySelector('.status');s.dataset.s=state;s.querySelector('.txt').textContent=text;}
-async function check(card){const svc=card.svc,el=card.el;if(await probe(svc.url,{cors:!!svc.cors})){setStatus(el,'up','在线');return;}if(svc.fallback&&(await probe(svc.fallback,{cors:!!svc.cors})||await probe(svc.fallback))){el.href=svc.fallback;el.querySelector('.host').textContent=new URL(svc.fallback).host;setStatus(el,'up','在线');return;}setStatus(el,'down','离线');}
+async function check(card){const svc=card.svc,el=card.el;
+  // CORS failure alone must not send a healthy brand domain to fallback.
+  if(await probe(svc.url,{cors:!!svc.cors}) || (svc.cors && await probe(svc.url))){setStatus(el,'up','');return;}
+  if(svc.fallback&&(await probe(svc.fallback,{cors:!!svc.cors})||await probe(svc.fallback))){el.href=svc.fallback;setStatus(el,'up','');return;}
+  setStatus(el,'down','离线');
+}
 const brandBtn=document.getElementById('brand-btn');
 async function refresh(){
   for(const card of cards){
     card.el.href=card.svc.url;
     card.el.querySelector('.host').textContent=new URL(card.svc.url).host;
-    setStatus(card.el,'check','检测中');
+    setStatus(card.el,'check','');
   }
   await Promise.all([Promise.all(cards.map(check)),loadHeadlines().then(loadMoviePeek)]);
   document.getElementById('stamp').textContent='最后检测 '+new Date().toLocaleTimeString('zh-CN',{hour12:false});
