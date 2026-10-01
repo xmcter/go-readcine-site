@@ -41,6 +41,34 @@
   .peek li { display: grid; grid-template-columns: auto 1fr; gap: 8px; font-size: 13px; line-height: 1.45; }
   .peek .when { font-family: var(--mono); font-size: 11px; color: var(--faint); white-space: nowrap; padding-top: 2px; }
   .host { font-family: var(--mono); font-size: 11.5px; color: var(--faint); }
+  .header-main { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .site-traffic {
+    display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-family: var(--mono);
+    color: var(--muted); background: var(--card); border: 1px solid var(--border); padding: 5px 14px;
+    border-radius: 20px; box-shadow: var(--shadow);
+  }
+  .traffic-pulse {
+    width: 6px; height: 6px; border-radius: 50%; background: #35c07a;
+    box-shadow: 0 0 0 2.5px rgba(53, 192, 122, 0.25); animation: traffic-glow 2s infinite;
+  }
+  @keyframes traffic-glow {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+  }
+  .site-traffic .traffic-item strong { color: var(--text); font-weight: 650; }
+  .site-traffic .traffic-sep { color: var(--border); margin: 0 1px; }
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px;
+    padding-top: 8px; border-top: 1px dashed var(--border);
+  }
+  .card-traffic {
+    font-family: var(--mono); font-size: 11px; color: var(--faint);
+    display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+  }
+  .card-traffic .t-today { color: var(--accent); font-weight: 600; }
+  .card-traffic .t-yesterday { color: var(--muted); font-weight: 550; }
+  .card-traffic .t-sep { color: var(--border); }
   footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--faint); display: flex; gap: 8px 16px; align-items: center; }
   footer .sep { flex: 1 }
   #theme { background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--muted); font: inherit; font-size: 12px; padding: 4px 10px; cursor: pointer; }
@@ -49,7 +77,15 @@
 <body>
 <div class="wrap">
   <header>
-    <h1 class="brand"><button id="brand-btn" type="button">readcine<span class="dot">.</span></button></h1>
+    <div class="header-main">
+      <h1 class="brand"><button id="brand-btn" type="button">readcine<span class="dot">.</span></button></h1>
+      <div class="site-traffic" id="site-traffic" title="readcine 导航站访客统计">
+        <span class="traffic-pulse"></span>
+        <span class="traffic-item">主站今日 <strong id="stat-site-today">—</strong></span>
+        <span class="traffic-sep">/</span>
+        <span class="traffic-item">昨日 <strong id="stat-site-yesterday">—</strong></span>
+      </div>
+    </div>
     <p class="tagline">卡片里是最近更新 · 点卡片进站 · 点标题刷新状态</p>
   </header>
   <main class="grid" id="grid"></main>
@@ -84,13 +120,14 @@ function newestFirst(items){
 function peekHtml(items){return '<ul class="peek">'+items.slice(0,3).map(it=>'<li><span class="when">'+esc(it.when||'')+'</span><span>'+esc(it.text||'')+'</span></li>').join('')+'</ul>';}
 function renderPeek(el,items){
   if(!items||!items.length) return;
-  const host=el.querySelector('.host');
+  const footer=el.querySelector('.card-footer') || el.querySelector('.host');
   const old=el.querySelector('.peek');
   const wrap=document.createElement('div');
   wrap.innerHTML=peekHtml(newestFirst(items));
   const node=wrap.firstElementChild;
   if(old) old.replaceWith(node);
-  else host.before(node);
+  else if(footer) footer.before(node);
+  else el.appendChild(node);
 }
 function fmtWhen(iso){
   const m=String(iso||'').match(/(\d{4})-(\d{2})-(\d{2})/);
@@ -109,8 +146,12 @@ function isJunkTitle(t){
 }
 const cards=SERVICES.map(svc=>{
   const a=document.createElement('a');
-  a.className='card'; a.href=svc.url; a.rel='noopener';
-  a.innerHTML='<div class="card-top"><span class="icon">'+svc.icon+'</span><span class="name">'+svc.name+'</span><span class="status" data-s="check"><span class="led"></span><span class="txt"></span></span></div><p class="desc">'+svc.desc+'</p><div class="host">'+new URL(svc.url).host+'</div>';
+  a.className='card'; a.href=svc.url; a.rel='noopener'; a.dataset.id=svc.id;
+  a.innerHTML='<div class="card-top"><span class="icon">'+svc.icon+'</span><span class="name">'+svc.name+'</span><span class="status" data-s="check"><span class="led"></span><span class="txt"></span></span></div><p class="desc">'+svc.desc+'</p>' +
+    '<div class="card-footer">' +
+      '<div class="host">'+new URL(svc.url).host+'</div>' +
+      '<div class="card-traffic" id="traffic-'+svc.id+'">今日 <span class="t-today">—</span><span class="t-sep">/</span>昨日 <span class="t-yesterday">—</span></div>' +
+    '</div>';
   grid.appendChild(a);
   return {svc,el:a};
 });
@@ -155,6 +196,68 @@ async function check(card){const svc=card.svc,el=card.el;
   if(svc.fallback&&(await probe(svc.fallback,{cors:!!svc.cors})||await probe(svc.fallback))){el.href=svc.fallback;setStatus(el,'up','');return;}
   setStatus(el,'down','离线');
 }
+const STATS_KEY='readcine_user_visit_date';
+const STATS_DELTA_KEY='readcine_user_deltas';
+
+async function loadStats(){
+  try{
+    const res=await fetch('stats.json?t='+Date.now(),{cache:'no-store'});
+    if(!res.ok) return;
+    const data=await res.json();
+
+    const now=new Date();
+    const todayStr=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    let lastVisit=localStorage.getItem(STATS_KEY);
+    let deltas={};
+    try{ deltas=JSON.parse(localStorage.getItem(STATS_DELTA_KEY)||'{}'); }catch(e){}
+
+    if(lastVisit!==todayStr){
+      localStorage.setItem(STATS_KEY,todayStr);
+      deltas.site=(deltas.site||0)+1;
+      localStorage.setItem(STATS_DELTA_KEY,JSON.stringify(deltas));
+    }
+
+    const siteToday=(data.site?.today||0)+(deltas.site||0);
+    const siteYest=data.site?.yesterday||0;
+    const siteTodayEl=document.getElementById('stat-site-today');
+    const siteYestEl=document.getElementById('stat-site-yesterday');
+    if(siteTodayEl) siteTodayEl.textContent=siteToday.toLocaleString();
+    if(siteYestEl) siteYestEl.textContent=siteYest.toLocaleString();
+
+    if(data.services){
+      for(const [id,s] of Object.entries(data.services)){
+        const el=document.getElementById('traffic-'+id);
+        if(el){
+          const svcToday=(s.today||0)+(deltas[id]||0);
+          el.innerHTML=`今日 <span class="t-today">${svcToday}</span><span class="t-sep">/</span>昨日 <span class="t-yesterday">${s.yesterday}</span>`;
+        }
+      }
+    }
+  }catch(e){
+    console.error('加载统计失败',e);
+  }
+}
+
+grid.addEventListener('click',e=>{
+  const card=e.target.closest('.card');
+  if(!card) return;
+  const svcId=card.dataset.id;
+  if(!svcId) return;
+  try{
+    let deltas=JSON.parse(localStorage.getItem(STATS_DELTA_KEY)||'{}');
+    deltas[svcId]=(deltas[svcId]||0)+1;
+    localStorage.setItem(STATS_DELTA_KEY,JSON.stringify(deltas));
+    const trafficEl=document.getElementById('traffic-'+svcId);
+    if(trafficEl){
+      const todaySpan=trafficEl.querySelector('.t-today');
+      if(todaySpan){
+        const cur=parseInt(todaySpan.textContent.replace(/,/g,''))||0;
+        todaySpan.textContent=cur+1;
+      }
+    }
+  }catch(err){}
+});
+
 const brandBtn=document.getElementById('brand-btn');
 async function refresh(){
   for(const card of cards){
@@ -162,11 +265,12 @@ async function refresh(){
     card.el.querySelector('.host').textContent=new URL(card.svc.url).host;
     setStatus(card.el,'check','');
   }
-  await Promise.all([Promise.all(cards.map(check)),loadHeadlines().then(loadMoviePeek)]);
+  await Promise.all([Promise.all(cards.map(check)),loadHeadlines().then(loadMoviePeek),loadStats()]);
   document.getElementById('stamp').textContent='最后检测 '+new Date().toLocaleTimeString('zh-CN',{hour12:false});
 }
 brandBtn.addEventListener('click',refresh);
 loadHeadlines().then(loadMoviePeek);
+loadStats();
 refresh();
 const KEY='forcine-theme';const themeBtn=document.getElementById('theme');const saved=localStorage.getItem(KEY);if(saved)document.documentElement.dataset.theme=saved;
 function isDark(){const root=document.documentElement;return root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
