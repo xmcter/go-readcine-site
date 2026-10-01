@@ -1,23 +1,59 @@
 {
   "updated": "2026-10-01",
   "movie": [
-    { "when": "09-15", "text": "《内陆惊魂》含花絮" },
-    { "when": "09-15", "text": "《越狱二人组》" },
-    { "when": "09-14", "text": "《逃出绝命街》《翠鸟谋杀案》《老笠》" }
+    {
+      "when": "09-15",
+      "text": "《内陆惊魂》含花絮"
+    },
+    {
+      "when": "09-15",
+      "text": "《越狱二人组》"
+    },
+    {
+      "when": "09-14",
+      "text": "《逃出绝命街》《翠鸟谋杀案》《老笠》"
+    }
   ],
   "news": [
-    { "when": "10-01", "text": "东京39 Gala · 蒙吉《峡湾》亚洲首映" },
-    { "when": "10-01", "text": "东京39 Gala · 麦克多纳《野马九号》" },
-    { "when": "10-01", "text": "东京39 World Focus · 赫尔扎诺夫斯基《DAU》" }
+    {
+      "when": "10-01",
+      "text": "金马63入围 · 《女孩》《双囍》等五部剧情片"
+    },
+    {
+      "when": "10-01",
+      "text": "东京39 Gala · 蒙吉《峡湾》亚洲首映"
+    },
+    {
+      "when": "10-01",
+      "text": "东京39 Gala · 麦克多纳《野马九号》"
+    }
   ],
   "ai": [
-    { "when": "09-15", "text": "Cline Desktop 0.0.28 + CLI 3.0.62" },
-    { "when": "09-15", "text": "Anthropic 公布 agent 爆炸半径限制" },
-    { "when": "09-14", "text": "马斯克：Grok 4.8 本周结束训练进 RL" }
+    {
+      "when": "09-15",
+      "text": "Cline Desktop 0.0.28 + CLI 3.0.62"
+    },
+    {
+      "when": "09-15",
+      "text": "Anthropic 公布 agent 爆炸半径限制"
+    },
+    {
+      "when": "09-14",
+      "text": "马斯克：Grok 4.8 本周结束训练进 RL"
+    }
   ],
   "deals": [
-    { "when": "09-20", "text": "Command Code GOAT $10 含 $70 额度" },
-    { "when": "09-19", "text": "Claude Code 随 Pro $20 · 限额翻倍" },
-    { "when": "09-18", "text": "Devin SWE-2 限时免费 · Antigravity 个人版 $0" }
+    {
+      "when": "09-20",
+      "text": "Command Code GOAT $10 含 $70 额度"
+    },
+    {
+      "when": "09-19",
+      "text": "Claude Code 随 Pro $20 · 限额翻倍"
+    },
+    {
+      "when": "09-18",
+      "text": "Devin SWE-2 限时免费 · Antigravity 个人版 $0"
+    }
   ]
 }
