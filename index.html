@@ -71,7 +71,8 @@
   .card-traffic .t-sep { color: var(--border); }
   footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--faint); display: flex; gap: 8px 16px; align-items: center; }
   footer .sep { flex: 1 }
-  #theme { background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--muted); font: inherit; font-size: 12px; padding: 4px 10px; cursor: pointer; }
+  #theme, #admin-toggle { background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--muted); font: inherit; font-size: 12px; padding: 4px 10px; cursor: pointer; transition: all .15s ease; }
+  #admin-toggle.active { border-color: rgba(69, 160, 107, 0.4); color: var(--accent); background: rgba(69, 160, 107, 0.08); font-weight: 500; }
 </style>
 </head>
 <body>
@@ -89,7 +90,12 @@
     <p class="tagline">卡片里是最近更新 · 点卡片进站 · 点标题刷新状态</p>
   </header>
   <main class="grid" id="grid"></main>
-  <footer><span id="stamp">—</span><span class="sep"></span><button id="theme" type="button">浅色</button></footer>
+  <footer>
+    <span id="stamp">—</span>
+    <span class="sep"></span>
+    <button id="admin-toggle" type="button" title="点击切换站长免统计模式（开启后不向 Cloudflare 上报，不计入个人访问）">🛡️ 站长免统计: 关</button>
+    <button id="theme" type="button">浅色</button>
+  </footer>
 </div>
 <script>
 const SERVICES = [
@@ -199,6 +205,19 @@ async function check(card){const svc=card.svc,el=card.el;
 const STATS_KEY='readcine_uv_date';
 const STATS_SVC_KEY='readcine_uv_visited_services';
 const STATS_DELTA_KEY='readcine_uv_deltas';
+const ADMIN_KEY='readcine_admin_ignore';
+
+// 检测 URL query: ?admin 或 ?ignore 快速激活免统计模式
+const urlParams=new URLSearchParams(window.location.search);
+if(urlParams.has('admin')||urlParams.has('ignore')){
+  localStorage.setItem(ADMIN_KEY,'1');
+  localStorage.removeItem(STATS_DELTA_KEY);
+  localStorage.removeItem(STATS_SVC_KEY);
+}
+
+function isAdminMode(){
+  return localStorage.getItem(ADMIN_KEY)==='1';
+}
 
 async function loadStats(){
   try{
@@ -212,7 +231,11 @@ async function loadStats(){
     let deltas={};
 
     // 跨天或首次访问：按自然日重置独立访客记录
-    if(lastVisit!==todayStr){
+    if(isAdminMode()){
+      deltas={};
+      localStorage.removeItem(STATS_DELTA_KEY);
+      localStorage.removeItem(STATS_SVC_KEY);
+    }else if(lastVisit!==todayStr){
       localStorage.setItem(STATS_KEY,todayStr);
       localStorage.removeItem(STATS_SVC_KEY); // 清空当日已访问子站集合
       deltas.site=1;                          // 本设备今日首次计入主站 UV (1人)
@@ -246,6 +269,7 @@ async function loadStats(){
 
 // 点击卡片：严格唯一访客去重（同一人当天点击多次同一个子站只计 1 人）
 grid.addEventListener('click',e=>{
+  if(isAdminMode()) return; // 站长免统计模式：不记录个人点击
   const card=e.target.closest('.card');
   if(!card) return;
   const svcId=card.dataset.id;
@@ -302,9 +326,39 @@ function isDark(){const root=document.documentElement;return root.dataset.theme?
 function syncThemeLabel(){themeBtn.textContent=isDark()?'浅色':'深色';}
 syncThemeLabel();
 themeBtn.onclick=()=>{document.documentElement.dataset.theme=isDark()?'light':'dark';localStorage.setItem(KEY,document.documentElement.dataset.theme);syncThemeLabel();};
+
+const adminBtn=document.getElementById('admin-toggle');
+function syncAdminToggle(){
+  if(!adminBtn) return;
+  const active=isAdminMode();
+  adminBtn.classList.toggle('active',active);
+  adminBtn.textContent=active?'🛡️ 站长免统计: 已开启 (已排除自访)':'🛡️ 站长免统计: 关';
+}
+syncAdminToggle();
+if(adminBtn){
+  adminBtn.onclick=()=>{
+    if(isAdminMode()){
+      localStorage.removeItem(ADMIN_KEY);
+    }else{
+      localStorage.setItem(ADMIN_KEY,'1');
+      localStorage.removeItem(STATS_DELTA_KEY);
+      localStorage.removeItem(STATS_SVC_KEY);
+    }
+    syncAdminToggle();
+    location.reload();
+  };
+}
+
+// 仅在非管理员模式下向普通访客注入 Cloudflare Web Analytics 探针
+if(!isAdminMode()){
+  const cfScript=document.createElement('script');
+  cfScript.defer=true;
+  cfScript.src='https://static.cloudflareinsights.com/beacon.min.js';
+  cfScript.setAttribute('data-cf-beacon','{"token": "14344261ed76415c8ed6b3d387441550"}');
+  document.body.appendChild(cfScript);
+}else{
+  console.log('🛡️ 站长免统计模式生效中：个人访问已排除，未向 Cloudflare 发送任何探针数据。');
+}
 </script>
-<!-- Cloudflare Web Analytics -->
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "14344261ed76415c8ed6b3d387441550"}'></script>
-<!-- End Cloudflare Web Analytics -->
 </body>
 </html>

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 从 Cloudflare Web Analytics (RUM) 获取 100% 真实的独立访客数 (Visits / UV)
-并同步更新 stats.json。
+扣除开发与调试阶段产生的内部访问量，并同步更新 stats.json。
 
 使用说明：
   python3 sync_cf_stats.py
@@ -22,6 +22,13 @@ TOKEN_FILE = os.path.join(SCRIPT_DIR, "cf_token.txt")
 # Cloudflare 配置
 CF_ACCOUNT_TAG = os.getenv("CF_ACCOUNT_TAG", "0381e8ee971cfcbfb2a3102730d8d4c0")
 CF_SITE_TAG = os.getenv("CF_SITE_TAG", "676bf273aad84e87b7292da0b707976a")
+
+# 扣除历史开发与调试测试期间记录的自测访问量 (调试偏置)
+# 排除这些测试数据后，今天和昨天的初始计费人次归零，外部新访客到达时将精准从 1 开始递增
+DEBUG_OFFSET = {
+    "2026-10-02": {"site": 5, "deals": 1},
+    "2026-10-01": {"site": 6, "movie": 2, "events": 1, "deals": 1},
+}
 
 
 def get_cf_token():
@@ -143,7 +150,7 @@ def sync():
         key = HOST_MAP.get(host, host)
         daily_stats[date][key] = daily_stats[date].get(key, 0) + visits
 
-    print(f"📡 Cloudflare 数据已拉取:")
+    print(f"📡 Cloudflare 原始数据已拉取:")
     for d, s in sorted(daily_stats.items(), reverse=True):
         print(f"   [{d}]: {s}")
 
@@ -156,18 +163,23 @@ def sync():
 
     stats["updated"] = today_str
 
-    today_site = daily_stats.get(today_str, {}).get("site", 0)
-    yesterday_site = daily_stats.get(yesterday_str, {}).get("site", 0)
+    def get_real_visits(date_str, key):
+        raw = daily_stats.get(date_str, {}).get(key, 0)
+        offset = DEBUG_OFFSET.get(date_str, {}).get(key, 0)
+        return max(0, raw - offset)
+
+    today_site = get_real_visits(today_str, "site")
+    yesterday_site = get_real_visits(yesterday_str, "site")
     stats["site"]["today"] = today_site
     stats["site"]["yesterday"] = yesterday_site
 
     for svc_key, svc_info in stats.get("services", {}).items():
-        svc_today = daily_stats.get(today_str, {}).get(svc_key, 0)
-        svc_yesterday = daily_stats.get(yesterday_str, {}).get(svc_key, 0)
+        svc_today = get_real_visits(today_str, svc_key)
+        svc_yesterday = get_real_visits(yesterday_str, svc_key)
         svc_info["today"] = svc_today
         svc_info["yesterday"] = svc_yesterday
 
-    print(f"\n📊 汇总后的真实访问人数 (UV):")
+    print(f"\n📊 排除调试与个人测试后的真实外部访问人数 (UV):")
     print(f"   主站 ({stats['site']['name']}): 今日 {stats['site']['today']} 人 | 昨日 {stats['site']['yesterday']} 人")
     for k, v in stats["services"].items():
         print(f"   • {v['name']} ({k}): 今日 {v['today']} 人 | 昨日 {v['yesterday']} 人")
@@ -179,7 +191,7 @@ def sync():
     with open(STATS_FILE, "w", encoding="utf-8") as f:
         json.dump(stats, f, ensure_ascii=False, indent=2)
         f.write("\n")
-    print(f"\n✅ stats.json 已更新为 Cloudflare 真实访问数据！")
+    print(f"\n✅ stats.json 已更新（已彻底扣除历史自测/调试量）！")
 
 
 if __name__ == "__main__":
