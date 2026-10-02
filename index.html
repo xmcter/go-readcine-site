@@ -303,5 +303,8 @@ function syncThemeLabel(){themeBtn.textContent=isDark()?'浅色':'深色';}
 syncThemeLabel();
 themeBtn.onclick=()=>{document.documentElement.dataset.theme=isDark()?'light':'dark';localStorage.setItem(KEY,document.documentElement.dataset.theme);syncThemeLabel();};
 </script>
+<!-- Cloudflare Web Analytics -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "14344261ed76415c8ed6b3d387441550"}'></script>
+<!-- End Cloudflare Web Analytics -->
 </body>
 </html>

@@ -1,1 +1,6 @@
 .vercel
+.env
+.env.*
+*.token
+*.token.txt
+cf_token.txt

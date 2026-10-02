@@ -2,14 +2,14 @@
   "updated": "2026-10-02",
   "site": {
     "name": "readcine 导航主站",
-    "today": 0,
-    "yesterday": 0
+    "today": 5,
+    "yesterday": 6
   },
   "services": {
     "movie": {
       "name": "电影资源库",
       "today": 0,
-      "yesterday": 0
+      "yesterday": 2
     },
     "guide": {
       "name": "电影导赏",
@@ -19,7 +19,7 @@
     "events": {
       "name": "电影活动",
       "today": 0,
-      "yesterday": 0
+      "yesterday": 1
     },
     "news": {
       "name": "银幕新讯",
@@ -38,8 +38,8 @@
     },
     "deals": {
       "name": "CodingPlan Deals",
-      "today": 0,
-      "yesterday": 0
+      "today": 1,
+      "yesterday": 1
     }
   }
 }
