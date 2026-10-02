@@ -1,45 +1,45 @@
 {
-  "updated": "2026-10-01",
+  "updated": "2026-10-02",
   "site": {
     "name": "readcine 导航主站",
-    "today": 326,
-    "yesterday": 358
+    "today": 0,
+    "yesterday": 0
   },
   "services": {
     "movie": {
       "name": "电影资源库",
-      "today": 512,
-      "yesterday": 546
+      "today": 0,
+      "yesterday": 0
     },
     "guide": {
       "name": "电影导赏",
-      "today": 168,
-      "yesterday": 182
+      "today": 0,
+      "yesterday": 0
     },
     "events": {
       "name": "电影活动",
-      "today": 115,
-      "yesterday": 124
+      "today": 0,
+      "yesterday": 0
     },
     "news": {
       "name": "银幕新讯",
-      "today": 342,
-      "yesterday": 360
+      "today": 0,
+      "yesterday": 0
     },
     "organize": {
       "name": "电影整理器",
-      "today": 220,
-      "yesterday": 245
+      "today": 0,
+      "yesterday": 0
     },
     "ai": {
       "name": "AI 情报站",
-      "today": 680,
-      "yesterday": 645
+      "today": 0,
+      "yesterday": 0
     },
     "deals": {
       "name": "CodingPlan Deals",
-      "today": 435,
-      "yesterday": 410
+      "today": 0,
+      "yesterday": 0
     }
   }
 }
