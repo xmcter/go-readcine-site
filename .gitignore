@@ -5,3 +5,6 @@
 *.token.txt
 cf_token.txt
 preview*.png
+
+# System & Environment security
+.DS_Store
