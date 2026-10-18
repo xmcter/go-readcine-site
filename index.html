@@ -503,7 +503,7 @@ if(!isAdminMode()){
 // PWA Service Worker 注册与应用安装管理
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch((err) => {
+    navigator.serviceWorker.register('/sw.js?v=2').catch((err) => {
       console.warn('PWA SW 注册失败:', err);
     });
   });
