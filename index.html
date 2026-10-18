@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="readcine 各站入口：片库、导赏、电影活动、银幕新讯、整理器。">
+<meta name="theme-color" content="#c8722c" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0f14" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ReadCine">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>readcine · 导航</title>
 <style>
   :root {
@@ -71,7 +82,9 @@
   .card-traffic .t-sep { color: var(--border); }
   footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--faint); display: flex; gap: 8px 16px; align-items: center; }
   footer .sep { flex: 1 }
-  #theme, #admin-toggle { background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--muted); font: inherit; font-size: 12px; padding: 4px 10px; cursor: pointer; transition: all .15s ease; }
+  #theme, #admin-toggle, #pwa-install { background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--muted); font: inherit; font-size: 12px; padding: 4px 10px; cursor: pointer; transition: all .15s ease; }
+  #pwa-install { display: none; align-items: center; gap: 4px; color: var(--accent); border-color: rgba(200, 114, 44, 0.4); }
+  #pwa-install:hover { background: rgba(200, 114, 44, 0.08); }
   #admin-toggle.active { border-color: rgba(69, 160, 107, 0.4); color: var(--accent); background: rgba(69, 160, 107, 0.08); font-weight: 500; }
 </style>
 </head>
@@ -88,6 +101,7 @@
   <footer>
     <span id="stamp">—</span>
     <span class="sep"></span>
+    <button id="pwa-install" type="button" title="安装为桌面或手机独立应用">📲 安装应用</button>
     <button id="admin-toggle" type="button" title="点击切换站长免统计模式（开启后不向 Cloudflare 上报，不计入个人访问）">🛡️ 站长免统计: 关</button>
     <button id="theme" type="button">浅色</button>
   </footer>
@@ -393,6 +407,44 @@ if(!isAdminMode()){
   document.body.appendChild(cfScript);
 }else{
   console.log('🛡️ 站长免统计模式生效中：个人访问已排除，未向 Cloudflare 发送任何探针数据。');
+}
+
+// PWA Service Worker 注册与应用安装管理
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((err) => {
+      console.warn('PWA SW 注册失败:', err);
+    });
+  });
+}
+
+let deferredPrompt = null;
+const installBtn = document.getElementById('pwa-install');
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+if (!isStandalone) {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (installBtn) installBtn.style.display = 'inline-flex';
+  });
+
+  if (installBtn) {
+    installBtn.onclick = async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          installBtn.style.display = 'none';
+        }
+        deferredPrompt = null;
+      }
+    };
+  }
+
+  window.addEventListener('appinstalled', () => {
+    if (installBtn) installBtn.style.display = 'none';
+  });
 }
 </script>
 </body>
