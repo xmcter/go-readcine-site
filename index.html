@@ -503,7 +503,7 @@ if(!isAdminMode()){
 // PWA Service Worker 注册与应用安装管理
 if ('serviceWorker' in navigator) {
   const registerSW = () => {
-    navigator.serviceWorker.register('/sw.js?v=3', { scope: '/' })
+    navigator.serviceWorker.register('/sw.js?v=4', { scope: '/' })
       .then((reg) => {
         reg.onupdatefound = () => {
           const installingWorker = reg.installing;
