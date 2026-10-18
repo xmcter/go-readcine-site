@@ -12,6 +12,16 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ReadCine">
 <link rel="manifest" href="/manifest.json">
+<link rel="dns-prefetch" href="//readcine.com">
+<link rel="dns-prefetch" href="//movie.readcine.com">
+<link rel="dns-prefetch" href="//news.readcine.com">
+<link rel="dns-prefetch" href="//ai.readcine.com">
+<link rel="dns-prefetch" href="//deals.readcine.com">
+<link rel="dns-prefetch" href="//guide.readcine.com">
+<link rel="dns-prefetch" href="//events.readcine.com">
+<link rel="dns-prefetch" href="//organize.readcine.com">
+<link rel="dns-prefetch" href="//static.cloudflareinsights.com">
+<link rel="preconnect" href="https://readcine.com" crossorigin>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
@@ -112,10 +122,10 @@ const SERVICES = [
   { id: 'movie', icon: '🎬', name: '电影资源库', desc: '片库检索与更新。', url: 'https://movie.readcine.com', fallback: 'https://movieupdate.forcine.dpdns.org' },
   { id: 'guide', icon: '🎞', name: '电影导赏', desc: '选片之前先看导赏。评分、奖项和主创在一张卡上，默认不剧透。', url: 'https://guide.readcine.com' },
   { id: 'events', icon: '📅', name: '电影活动', desc: '长沙非院线放映日历。', url: 'https://events.readcine.com' },
-  { id: 'news', icon: '🏆', name: '银幕新讯', desc: '作者向新片、A类电影节与奖讯。不收爆米花。', url: 'https://news.readcine.com', fallback: 'https://xmcter.github.io/movie-awards-site/', cors: true },
-  { id: 'organize', icon: '📱', name: '电影整理器', desc: 'Android 本地/SMB 影片刮削整理与海报墙，APK 下载。', url: 'https://organize.readcine.com', cors: true },
-  { id: 'ai', icon: '📡', name: 'AI 情报站', desc: 'AI 工具与 Agent 更新，中文提炼。', url: 'https://ai.readcine.com', fallback: 'https://ai-readcine.forcine.dpdns.org', cors: true },
-  { id: 'deals', icon: '🏷️', name: 'CodingPlan Deals', desc: '编程套餐折扣雷达，时间线与优惠情报。', url: 'https://deals.readcine.com', fallback: 'https://go.readcine.com/deals/', cors: true }
+  { id: 'news', icon: '🏆', name: '银幕新讯', desc: '作者向新片、A类电影节与奖讯。不收爆米花。', url: 'https://news.readcine.com', fallback: 'https://xmcter.github.io/movie-awards-site/' },
+  { id: 'organize', icon: '📱', name: '电影整理器', desc: 'Android 本地/SMB 影片刮削整理与海报墙，APK 下载。', url: 'https://organize.readcine.com' },
+  { id: 'ai', icon: '📡', name: 'AI 情报站', desc: 'AI 工具与 Agent 更新，中文提炼。', url: 'https://ai.readcine.com', fallback: 'https://ai-readcine.forcine.dpdns.org' },
+  { id: 'deals', icon: '🏷️', name: 'CodingPlan Deals', desc: '编程套餐折扣雷达，时间线与优惠情报。', url: 'https://deals.readcine.com', fallback: 'https://go.readcine.com/deals/' }
 ];
 const PEEK_URL = 'https://movie.readcine.com/api/peek';
 const JUNK_RE = /(ARASHI|AROUND ASIA|演唱会|音乐会|巡演|音乐节|concert|tour live|MV合集)/i;
@@ -170,22 +180,48 @@ const cards=SERVICES.map(svc=>{
   grid.appendChild(a);
   return {svc,el:a};
 });
+
+const HEADLINES_CACHE_KEY = 'readcine_headlines_cache';
+const MOVIE_PEEK_CACHE_KEY = 'readcine_movie_peek_cache';
+
+function applyHeadlines(data){
+  if(!data) return;
+  for(const {svc,el} of cards){
+    const items=data[svc.id]||[];
+    renderPeek(el, items);
+  }
+}
+
 async function loadHeadlines(){
   try{
-    const res=await fetch('headlines.json?t='+Date.now(),{cache:'no-store'});
+    const cached=localStorage.getItem(HEADLINES_CACHE_KEY);
+    if(cached) applyHeadlines(JSON.parse(cached));
+  }catch(_){}
+
+  try{
+    const res=await fetch('headlines.json');
     if(!res.ok) return;
     const data=await res.json();
-    for(const {svc,el} of cards){
-      const items=data[svc.id]||[];
-      renderPeek(el, items);
-    }
+    applyHeadlines(data);
+    try{ localStorage.setItem(HEADLINES_CACHE_KEY, JSON.stringify(data)); }catch(_){}
   }catch(e){}
 }
-async function loadMoviePeek(){
+
+function applyMoviePeek(items){
   const movie=cards.find(c=>c.svc.id==='movie');
-  if(!movie) return;
+  if(movie && items && items.length) renderPeek(movie.el, items);
+}
+
+async function loadMoviePeek(){
   try{
-    const res=await fetch(PEEK_URL,{cache:'no-store',mode:'cors'});
+    const cached=localStorage.getItem(MOVIE_PEEK_CACHE_KEY);
+    if(cached) applyMoviePeek(JSON.parse(cached));
+  }catch(_){}
+
+  const ctl=new AbortController();
+  const timer=setTimeout(()=>ctl.abort(),3500);
+  try{
+    const res=await fetch(PEEK_URL,{mode:'cors',signal:ctl.signal});
     if(!res.ok) return;
     const data=await res.json();
     const rows=(data&&data.data)||[];
@@ -200,15 +236,32 @@ async function loadMoviePeek(){
       items.push({when:fmtWhen(row.posted_at||row.updated_at), text:'《'+title+'》'});
       if(items.length>=3) break;
     }
-    if(items.length) renderPeek(movie.el, items);
-  }catch(e){}
+    if(items.length){
+      applyMoviePeek(items);
+      try{ localStorage.setItem(MOVIE_PEEK_CACHE_KEY, JSON.stringify(items)); }catch(_){}
+    }
+  }catch(e){}finally{clearTimeout(timer);}
 }
-async function probe(url,opts){const cors=opts&&opts.cors;const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),5000);try{if(cors){try{const head=await fetch(url,{method:'HEAD',mode:'cors',cache:'no-store',signal:ctl.signal});return head.ok;}catch{const res=await fetch(url,{method:'GET',mode:'cors',cache:'no-store',signal:ctl.signal});return res.ok;}}await fetch(url,{mode:'no-cors',cache:'no-store',signal:ctl.signal});return true;}catch{return false;}finally{clearTimeout(timer);}}
+
+async function probe(url){
+  const ctl=new AbortController();
+  const timer=setTimeout(()=>ctl.abort(),2500);
+  try{
+    await fetch(url,{mode:'no-cors',cache:'no-store',signal:ctl.signal});
+    return true;
+  }catch{
+    return false;
+  }finally{
+    clearTimeout(timer);
+  }
+}
+
 function setStatus(el,state,text){const s=el.querySelector('.status');s.dataset.s=state;s.querySelector('.txt').textContent=text;}
-async function check(card){const svc=card.svc,el=card.el;
-  // CORS failure alone must not send a healthy brand domain to fallback.
-  if(await probe(svc.url,{cors:!!svc.cors}) || (svc.cors && await probe(svc.url))){setStatus(el,'up','');return;}
-  if(svc.fallback&&(await probe(svc.fallback,{cors:!!svc.cors})||await probe(svc.fallback))){el.href=svc.fallback;setStatus(el,'up','');return;}
+
+async function check(card){
+  const svc=card.svc,el=card.el;
+  if(await probe(svc.url)){setStatus(el,'up','');return;}
+  if(svc.fallback&&await probe(svc.fallback)){el.href=svc.fallback;setStatus(el,'up','');return;}
   setStatus(el,'down','离线');
 }
 const STATS_KEY='readcine_uv_date';
@@ -267,11 +320,53 @@ function renderCardTraffic(el,today,yesterday){
   }
 }
 
+const STATS_DATA_CACHE_KEY = 'readcine_stats_cache';
+
+function applyStats(data){
+  if(!data) return;
+  const now=new Date();
+  const todayStr=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  let lastVisit=localStorage.getItem(STATS_KEY);
+  let deltas={};
+
+  if(isAdminMode()){
+    deltas={};
+  }else if(lastVisit!==todayStr){
+    deltas={};
+  }else{
+    try{ deltas=JSON.parse(localStorage.getItem(STATS_DELTA_KEY)||'{}'); }catch(e){}
+  }
+
+  const siteToday=(data.site?.today||0)+(deltas.site?1:0);
+  const siteYest=data.site?.yesterday||0;
+  currentStats.site.today=siteToday;
+  currentStats.site.yesterday=siteYest;
+  renderSiteTraffic(siteToday,siteYest);
+
+  if(data.services){
+    for(const [id,s] of Object.entries(data.services)){
+      const svcToday=(s.today||0)+(deltas[id]?1:0);
+      const svcYest=s.yesterday||0;
+      currentStats.services[id]={today:svcToday,yesterday:svcYest};
+      const el=document.getElementById('traffic-'+id);
+      if(el){
+        renderCardTraffic(el,svcToday,svcYest);
+      }
+    }
+  }
+}
+
 async function loadStats(){
   try{
-    const res=await fetch('stats.json?t='+Date.now(),{cache:'no-store'});
+    const cached=localStorage.getItem(STATS_DATA_CACHE_KEY);
+    if(cached) applyStats(JSON.parse(cached));
+  }catch(_){}
+
+  try{
+    const res=await fetch('stats.json');
     if(!res.ok) return;
     const data=await res.json();
+    try{ localStorage.setItem(STATS_DATA_CACHE_KEY, JSON.stringify(data)); }catch(_){}
 
     const now=new Date();
     const todayStr=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
@@ -292,25 +387,7 @@ async function loadStats(){
       try{ deltas=JSON.parse(localStorage.getItem(STATS_DELTA_KEY)||'{}'); }catch(e){}
     }
 
-    // 主站独立访客 (UV)
-    const siteToday=(data.site?.today||0)+(deltas.site?1:0);
-    const siteYest=data.site?.yesterday||0;
-    currentStats.site.today=siteToday;
-    currentStats.site.yesterday=siteYest;
-    renderSiteTraffic(siteToday,siteYest);
-
-    // 二级域名独立访客 (UV)
-    if(data.services){
-      for(const [id,s] of Object.entries(data.services)){
-        const svcToday=(s.today||0)+(deltas[id]?1:0);
-        const svcYest=s.yesterday||0;
-        currentStats.services[id]={today:svcToday,yesterday:svcYest};
-        const el=document.getElementById('traffic-'+id);
-        if(el){
-          renderCardTraffic(el,svcToday,svcYest);
-        }
-      }
-    }
+    applyStats(data);
   }catch(e){
     console.error('加载统计失败',e);
   }
@@ -357,19 +434,26 @@ grid.addEventListener('click',e=>{
 });
 
 const brandBtn=document.getElementById('brand-btn');
+async function runChecks(){
+  await Promise.all(cards.map(check));
+  const stampEl=document.getElementById('stamp');
+  if(stampEl) stampEl.textContent='最后检测 '+new Date().toLocaleTimeString('zh-CN',{hour12:false});
+}
+
 async function refresh(){
   for(const card of cards){
     card.el.href=card.svc.url;
     card.el.querySelector('.host').textContent=new URL(card.svc.url).host;
     setStatus(card.el,'check','');
   }
-  await Promise.all([Promise.all(cards.map(check)),loadHeadlines().then(loadMoviePeek),loadStats()]);
-  document.getElementById('stamp').textContent='最后检测 '+new Date().toLocaleTimeString('zh-CN',{hour12:false});
+  await Promise.all([runChecks(),loadHeadlines().then(loadMoviePeek),loadStats()]);
 }
 brandBtn.addEventListener('click',refresh);
+
+// 极速首屏并行非阻塞加载：各组件利用本地缓存 0ms 即刻呈现，静默后台差量更新
 loadHeadlines().then(loadMoviePeek);
 loadStats();
-refresh();
+runChecks();
 const KEY='forcine-theme';const themeBtn=document.getElementById('theme');const saved=localStorage.getItem(KEY);if(saved)document.documentElement.dataset.theme=saved;
 function isDark(){const root=document.documentElement;return root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
 function syncThemeLabel(){themeBtn.textContent=isDark()?'浅色':'深色';}
@@ -398,13 +482,20 @@ if(adminBtn){
   };
 }
 
-// 仅在非管理员模式下向普通访客注入 Cloudflare Web Analytics 探针
+// 仅在非管理员模式下向普通访客注入 Cloudflare Web Analytics 探针（延迟加载，避免竞争关键资源）
 if(!isAdminMode()){
-  const cfScript=document.createElement('script');
-  cfScript.defer=true;
-  cfScript.src='https://static.cloudflareinsights.com/beacon.min.js';
-  cfScript.setAttribute('data-cf-beacon','{"token": "14344261ed76415c8ed6b3d387441550"}');
-  document.body.appendChild(cfScript);
+  const injectAnalytics=()=>{
+    const cfScript=document.createElement('script');
+    cfScript.defer=true;
+    cfScript.src='https://static.cloudflareinsights.com/beacon.min.js';
+    cfScript.setAttribute('data-cf-beacon','{"token": "14344261ed76415c8ed6b3d387441550"}');
+    document.body.appendChild(cfScript);
+  };
+  if('requestIdleCallback' in window){
+    requestIdleCallback(injectAnalytics,{timeout:3000});
+  }else{
+    window.addEventListener('load',injectAnalytics);
+  }
 }else{
   console.log('🛡️ 站长免统计模式生效中：个人访问已排除，未向 Cloudflare 发送任何探针数据。');
 }

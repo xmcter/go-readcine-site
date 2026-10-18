@@ -1,10 +1,9 @@
-const CACHE_NAME = 'readcine-pwa-v1';
+const CACHE_NAME = 'readcine-pwa-v2';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/icon-192.png',
-  '/icon-512.png',
   '/favicon.ico',
   '/favicon.png',
   '/apple-touch-icon.png'
@@ -43,16 +42,21 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 对于 stats.json / headlines.json：采用 Network-first 策略，实时性优先
+  // 对于 stats.json / headlines.json：采用 Stale-While-Revalidate 策略
+  // 极速返回本地缓存（0ms），并在后台静默拉取更新缓存
   if (url.pathname.endsWith('.json')) {
     event.respondWith(
-      fetch(req).then((res) => {
-        if (res.ok) {
-          const resClone = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
-        }
-        return res;
-      }).catch(() => caches.match(req))
+      caches.open(CACHE_NAME).then((cache) => {
+        return cache.match(req).then((cached) => {
+          const fetchPromise = fetch(req).then((res) => {
+            if (res.ok) {
+              cache.put(req, res.clone());
+            }
+            return res;
+          }).catch(() => cached);
+          return cached || fetchPromise;
+        });
+      })
     );
     return;
   }
