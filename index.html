@@ -502,39 +502,69 @@ if(!isAdminMode()){
 
 // PWA Service Worker 注册与应用安装管理
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js?v=2').catch((err) => {
-      console.warn('PWA SW 注册失败:', err);
-    });
-  });
+  const registerSW = () => {
+    navigator.serviceWorker.register('/sw.js?v=3', { scope: '/' })
+      .then((reg) => {
+        reg.onupdatefound = () => {
+          const installingWorker = reg.installing;
+          if (installingWorker) {
+            installingWorker.onstatechange = () => {
+              if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('ReadCine PWA 已有新版本可用');
+              }
+            };
+          }
+        };
+      })
+      .catch((err) => {
+        console.warn('PWA SW 注册失败:', err);
+      });
+  };
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    registerSW();
+  } else {
+    window.addEventListener('DOMContentLoaded', registerSW);
+  }
 }
 
 let deferredPrompt = null;
 const installBtn = document.getElementById('pwa-install');
 const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
-if (!isStandalone) {
+if (!isStandalone && installBtn) {
+  installBtn.style.display = 'inline-flex';
+
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    if (installBtn) installBtn.style.display = 'inline-flex';
+    installBtn.style.display = 'inline-flex';
   });
 
-  if (installBtn) {
-    installBtn.onclick = async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-          installBtn.style.display = 'none';
-        }
-        deferredPrompt = null;
+  installBtn.onclick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        installBtn.style.display = 'none';
       }
-    };
-  }
+      deferredPrompt = null;
+    } else {
+      const ua = navigator.userAgent || '';
+      const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+      const isAndroid = /Android/.test(ua);
+      if (isAndroid) {
+        alert('【安装到手机桌面】\n\n1. 点击手机 Chrome 右上角三点菜单（⋮）\n2. 点击「添加到主屏幕」或「安装应用」\n3. 确认后即可在手机桌面像原生 App 一样直接启动使用。');
+      } else if (isIOS) {
+        alert('【添加到 iPhone 桌面】\n\n1. 点击 Safari 底部「分享」按钮（向上箭头）\n2. 向下滚动选择「添加到主屏幕」\n3. 点击右上角「添加」即可。');
+      } else {
+        alert('【安装为桌面应用】\n\n请点击浏览器地址栏右侧的「安装」图标，或在浏览器菜单（⋮）中选择「安装应用 / 添加到主屏幕」。');
+      }
+    }
+  };
 
   window.addEventListener('appinstalled', () => {
-    if (installBtn) installBtn.style.display = 'none';
+    installBtn.style.display = 'none';
+    console.log('ReadCine PWA 已成功安装！');
   });
 }
 </script>

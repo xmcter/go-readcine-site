@@ -1,9 +1,11 @@
-const CACHE_NAME = 'readcine-pwa-v2';
+const CACHE_NAME = 'readcine-pwa-v3';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
+  '/?source=pwa',
   '/manifest.json',
   '/icon-192.png',
+  '/icon-512.png',
   '/favicon.ico',
   '/favicon.png',
   '/apple-touch-icon.png'
@@ -42,12 +44,34 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 对于 stats.json / headlines.json：采用 Stale-While-Revalidate 策略
-  // 极速返回本地缓存（0ms），并在后台静默拉取更新缓存
+  // 1. 针对页面导航请求 (HTML / 路由 / start_url 离线检测)
+  // 保证离线或弱网下打开应用时绝对能返回有效 200 HTML 页面，满足 Chrome PWA 安装标准
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req)
+        .then((networkRes) => {
+          if (networkRes.ok) {
+            const clone = networkRes.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
+          }
+          return networkRes;
+        })
+        .catch(async () => {
+          const cache = await caches.open(CACHE_NAME);
+          const cached = await cache.match(req, { ignoreSearch: true });
+          if (cached) return cached;
+          const indexCached = (await cache.match('/index.html')) || (await cache.match('/'));
+          return indexCached || new Response('Offline', { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+        })
+    );
+    return;
+  }
+
+  // 2. 对于 stats.json / headlines.json：采用 Stale-While-Revalidate 策略
   if (url.pathname.endsWith('.json')) {
     event.respondWith(
       caches.open(CACHE_NAME).then((cache) => {
-        return cache.match(req).then((cached) => {
+        return cache.match(req, { ignoreSearch: true }).then((cached) => {
           const fetchPromise = fetch(req).then((res) => {
             if (res.ok) {
               cache.put(req, res.clone());
@@ -61,9 +85,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 对于图标与静态外壳：采用 Stale-While-Revalidate 策略
+  // 3. 对于图标与静态外壳：采用 Stale-While-Revalidate 策略
   event.respondWith(
-    caches.match(req).then((cached) => {
+    caches.match(req, { ignoreSearch: true }).then((cached) => {
       const fetchPromise = fetch(req).then((res) => {
         if (res.ok) {
           const resClone = res.clone();
