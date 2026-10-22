@@ -2,7 +2,7 @@
   "id": "/",
   "name": "ReadCine 影视导航",
   "short_name": "ReadCine",
-  "description": "readcine 各站入口：片库、导赏、电影活动、银幕新讯、整理器。",
+  "description": "readcine 各站入口：片库、导赏、电影活动、银幕新讯。",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
