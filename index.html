@@ -12,7 +12,6 @@
 <meta name="apple-mobile-web-app-title" content="ReadCine">
 <link rel="manifest" href="/manifest.json">
 <link rel="dns-prefetch" href="//readcine.com">
-<link rel="dns-prefetch" href="//movie.readcine.com">
 <link rel="dns-prefetch" href="//news.readcine.com">
 <link rel="dns-prefetch" href="//ai.readcine.com">
 <link rel="dns-prefetch" href="//deals.readcine.com">
@@ -129,15 +128,13 @@
 <script>
 const SERVICES = [
   // 公网站点挂在这里。只给自己用的放在 /private/。
-  { id: 'movie', icon: '🎬', name: '电影资源库', desc: '片库检索与更新。', url: 'https://movie.readcine.com', fallback: 'https://movieupdate.forcine.dpdns.org' },
   { id: 'guide', icon: '🎞', name: '电影导赏', desc: '选片之前先看导赏。评分、奖项和主创在一张卡上，默认不剧透。', url: 'https://guide.readcine.com' },
   { id: 'events', icon: '📅', name: '电影活动', desc: '长沙非院线放映日历。', url: 'https://events.readcine.com' },
   { id: 'news', icon: '🏆', name: '银幕新讯', desc: '作者向新片、A类电影节与奖讯。不收爆米花。', url: 'https://news.readcine.com', fallback: 'https://xmcter.github.io/movie-awards-site/' },
   { id: 'ai', icon: '📡', name: 'AI 情报站', desc: 'AI 工具与 Agent 更新，中文提炼。', url: 'https://ai.readcine.com', fallback: 'https://ai-readcine.forcine.dpdns.org' },
   { id: 'deals', icon: '🏷️', name: 'CodingPlan Deals', desc: '编程套餐折扣雷达，时间线与优惠情报。', url: 'https://deals.readcine.com', fallback: 'https://go.readcine.com/deals/' }
 ];
-const PEEK_URL = 'https://movie.readcine.com/api/peek';
-const PEEK_IDS = new Set(['movie','news','ai','deals']); // 有「最近更新」的卡片，先占位
+const PEEK_IDS = new Set(['news','ai','deals']); // 有「最近更新」的卡片，先占位
 const JUNK_RE = /(ARASHI|AROUND ASIA|演唱会|音乐会|巡演|音乐节|concert|tour live|MV合集)/i;
 const grid = document.getElementById('grid');
 function esc(s){const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
@@ -193,7 +190,6 @@ const cards=SERVICES.map(svc=>{
 });
 
 const HEADLINES_CACHE_KEY = 'readcine_headlines_cache';
-const MOVIE_PEEK_CACHE_KEY = 'readcine_movie_peek_cache';
 
 function applyHeadlines(data){
   if(!data) return;
@@ -216,42 +212,6 @@ async function loadHeadlines(){
     applyHeadlines(data);
     try{ localStorage.setItem(HEADLINES_CACHE_KEY, JSON.stringify(data)); }catch(_){}
   }catch(e){}
-}
-
-function applyMoviePeek(items){
-  const movie=cards.find(c=>c.svc.id==='movie');
-  if(movie && items && items.length) renderPeek(movie.el, items);
-}
-
-async function loadMoviePeek(){
-  try{
-    const cached=localStorage.getItem(MOVIE_PEEK_CACHE_KEY);
-    if(cached) applyMoviePeek(JSON.parse(cached));
-  }catch(_){}
-
-  const ctl=new AbortController();
-  const timer=setTimeout(()=>ctl.abort(),3500);
-  try{
-    const res=await fetch(PEEK_URL,{mode:'cors',signal:ctl.signal});
-    if(!res.ok) return;
-    const data=await res.json();
-    const rows=(data&&data.data)||[];
-    const items=[];
-    const seen=new Set();
-    for(const row of rows){
-      const title=cleanTitle(row.title);
-      if(isJunkTitle(title)) continue;
-      const key=title.replace(/[《》]/g,'').toLowerCase();
-      if(seen.has(key)) continue;
-      seen.add(key);
-      items.push({when:fmtWhen(row.posted_at||row.updated_at), text:'《'+title+'》'});
-      if(items.length>=3) break;
-    }
-    if(items.length){
-      applyMoviePeek(items);
-      try{ localStorage.setItem(MOVIE_PEEK_CACHE_KEY, JSON.stringify(items)); }catch(_){}
-    }
-  }catch(e){}finally{clearTimeout(timer);}
 }
 
 async function probe(url){
@@ -457,12 +417,12 @@ async function refresh(){
     card.el.querySelector('.host').textContent=new URL(card.svc.url).host;
     setStatus(card.el,'check','');
   }
-  await Promise.all([runChecks(),loadHeadlines().then(loadMoviePeek),loadStats()]);
+  await Promise.all([runChecks(),loadHeadlines(),loadStats()]);
 }
 brandBtn.addEventListener('click',refresh);
 
 // 极速首屏并行非阻塞加载：各组件利用本地缓存 0ms 即刻呈现，静默后台差量更新
-loadHeadlines().then(loadMoviePeek);
+loadHeadlines();
 loadStats();
 runChecks();
 const KEY='forcine-theme';const themeBtn=document.getElementById('theme');const saved=localStorage.getItem(KEY);if(saved)document.documentElement.dataset.theme=saved;
