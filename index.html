@@ -14,7 +14,6 @@
 <link rel="dns-prefetch" href="//readcine.com">
 <link rel="dns-prefetch" href="//news.readcine.com">
 <link rel="dns-prefetch" href="//ai.readcine.com">
-<link rel="dns-prefetch" href="//deals.readcine.com">
 <link rel="dns-prefetch" href="//guide.readcine.com">
 <link rel="dns-prefetch" href="//events.readcine.com">
 <link rel="dns-prefetch" href="//static.cloudflareinsights.com">
@@ -132,7 +131,7 @@ const SERVICES = [
   { id: 'events', icon: '📅', name: '电影活动', desc: '长沙非院线放映日历。', url: 'https://events.readcine.com' },
   { id: 'news', icon: '📡', name: '银幕新讯', desc: '高口碑新片与熟肉上线雷达。流媒体首发与节展大奖，不收爆米花。', url: 'https://news.readcine.com', fallback: 'https://xmcter.github.io/movie-awards-site/' },
   { id: 'ai', icon: '📡', name: 'AI 情报站', desc: 'AI 工具与 Agent 更新，中文提炼。', url: 'https://ai.readcine.com', fallback: 'https://ai-readcine.forcine.dpdns.org' },
-  { id: 'deals', icon: '🏷️', name: 'CodingPlan Deals', desc: '编程套餐折扣雷达，时间线与优惠情报。', url: 'https://deals.readcine.com', fallback: 'https://go.readcine.com/deals/' }
+  { id: 'deals', icon: '🏷️', name: 'CodingPlan Deals', desc: '编程套餐折扣雷达，时间线与优惠情报。', url: 'https://ai.readcine.com/stream.html?filter=deals', fallback: 'https://go.readcine.com/deals/' }
 ];
 const PEEK_IDS = new Set(['news','ai','deals']); // 有「最近更新」的卡片，先占位
 const JUNK_RE = /(ARASHI|AROUND ASIA|演唱会|音乐会|巡演|音乐节|concert|tour live|MV合集)/i;
