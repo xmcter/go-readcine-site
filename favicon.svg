@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img">
+  <defs>
+    <clipPath id="sq"><path d="M512.0 0C798.7 0 921.6 0 983.0 61.4C1024.0 122.9 1024.0 225.3 1024.0 512.0C1024.0 798.7 1024.0 901.1 983.0 962.6C921.6 1024.0 798.7 1024.0 512.0 1024.0C225.3 1024.0 122.9 1024.0 61.4 962.6C0 901.1 0 798.7 0 512.0C0 225.3 0 122.9 61.4 61.4C122.9 0 225.3 0 512.0 0Z"/></clipPath>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7B78EE"/>
+      <stop offset="100%" stop-color="#5856D6"/>
+    </linearGradient>
+  </defs>
+  <g clip-path="url(#sq)">
+    <path d="M512.0 0C798.7 0 921.6 0 983.0 61.4C1024.0 122.9 1024.0 225.3 1024.0 512.0C1024.0 798.7 1024.0 901.1 983.0 962.6C921.6 1024.0 798.7 1024.0 512.0 1024.0C225.3 1024.0 122.9 1024.0 61.4 962.6C0 901.1 0 798.7 0 512.0C0 225.3 0 122.9 61.4 61.4C122.9 0 225.3 0 512.0 0Z" fill="url(#bg)"/>
+    
+    <!-- soft rounded rectangle -->
+    <rect x="268" y="268" width="488" height="488" rx="96" fill="none" stroke="#FFFFFF" stroke-width="36" opacity="0.95"/>
+    <!-- play triangle -->
+    <path d="M430 340 L430 684 L710 512 Z" fill="#FFFFFF"/>
+
+  </g>
+</svg>
