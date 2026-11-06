@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img">
+  <defs>
+    <clipPath id="sq"><path d="M512.0 0C798.7 0 921.6 0 983.0 61.4C1024.0 122.9 1024.0 225.3 1024.0 512.0C1024.0 798.7 1024.0 901.1 983.0 962.6C921.6 1024.0 798.7 1024.0 512.0 1024.0C225.3 1024.0 122.9 1024.0 61.4 962.6C0 901.1 0 798.7 0 512.0C0 225.3 0 122.9 61.4 61.4C122.9 0 225.3 0 512.0 0Z"/></clipPath>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFB340"/>
+      <stop offset="100%" stop-color="#FF9500"/>
+    </linearGradient>
+  </defs>
+  <g clip-path="url(#sq)">
+    <path d="M512.0 0C798.7 0 921.6 0 983.0 61.4C1024.0 122.9 1024.0 225.3 1024.0 512.0C1024.0 798.7 1024.0 901.1 983.0 962.6C921.6 1024.0 798.7 1024.0 512.0 1024.0C225.3 1024.0 122.9 1024.0 61.4 962.6C0 901.1 0 798.7 0 512.0C0 225.3 0 122.9 61.4 61.4C122.9 0 225.3 0 512.0 0Z" fill="url(#bg)"/>
+    
+    <!-- single frame -->
+    <rect x="240" y="520" width="544" height="280" rx="36" fill="none" stroke="#FFFFFF" stroke-width="40"/>
+    <!-- arrow shaft -->
+    <rect x="472" y="200" width="80" height="300" rx="20" fill="#FFFFFF"/>
+    <!-- arrow head -->
+    <path d="M320 460 L512 680 L704 460 Z" fill="#FFFFFF"/>
+
+  </g>
+</svg>

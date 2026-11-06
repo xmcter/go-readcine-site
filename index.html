@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="readcine 各站入口：片库、导赏、电影活动、银幕新讯。">
-<meta name="theme-color" content="#c8722c" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0c0f14" media="(prefers-color-scheme: dark)">
+<meta name="description" content="readcine 各站入口：电影、AI 情报站。">
+<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,6 @@
 <link rel="dns-prefetch" href="//news.readcine.com">
 <link rel="dns-prefetch" href="//ai.readcine.com">
 <link rel="dns-prefetch" href="//guide.readcine.com">
-<link rel="dns-prefetch" href="//events.readcine.com">
 <link rel="dns-prefetch" href="//static.cloudflareinsights.com">
 <link rel="preconnect" href="https://readcine.com" crossorigin>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -28,7 +27,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ReadCine">
 <meta property="og:title" content="readcine · 导航">
-<meta property="og:description" content="readcine 各站入口：片库、导赏、电影活动、银幕新讯、AI 情报站。">
+<meta property="og:description" content="readcine 各站入口：电影、AI 情报站。">
 <meta property="og:url" content="https://readcine.com/">
 <meta property="og:image" content="https://readcine.com/og.png">
 <meta property="og:image:width" content="1200">
@@ -36,45 +35,48 @@
 <meta name="twitter:card" content="summary_large_image">
 <style>
   :root {
-    --bg: #f4f5f2; --bg-grad: radial-gradient(1200px 600px at 50% -10%, #e9ebe4 0%, transparent 70%);
-    --card: #ffffff; --border: #dcdfd9; --text: #14181f; --muted: #565f6b; --faint: #6e6e73; --accent: #a65a1e;
+    --bg: #f5f5f7; --bg-grad: none;
+    --card: #ffffff; --border: #d2d2d7; --text: #1d1d1f; --muted: #86868b; --faint: #86868b; --accent: #0071e3;
     --shadow: 0 1px 2px rgba(20,23,28,.06), 0 8px 24px rgba(20,23,28,.06);
     --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #0c0f14; --bg-grad: radial-gradient(1200px 600px at 50% -10%, #171c22 0%, transparent 70%);
-      --card: #12161d; --border: #262b33; --text: #e7ebe6; --muted: #9aa3ab; --faint: #6b7480; --accent: #e08a45; --shadow: none; }
+    :root { --bg: #000000; --bg-grad: none;
+      --card: #1c1c1e; --border: #38383a; --text: #f5f5f7; --muted: #98989d; --faint: #98989d; --accent: #0a84ff; --shadow: none; }
   }
-  :root[data-theme="dark"] { --bg: #0c0f14; --bg-grad: radial-gradient(1200px 600px at 50% -10%, #171c22 0%, transparent 70%);
-    --card: #12161d; --border: #262b33; --text: #e7ebe6; --muted: #9aa3ab; --faint: #6b7480; --accent: #e08a45; --shadow: none; }
-  :root[data-theme="light"] { --bg: #f4f5f2; --card: #ffffff; --border: #dcdfd9; --text: #14181f; --muted: #565f6b; --faint: #6e6e73; --accent: #a65a1e; }
+  :root[data-theme="dark"] { --bg: #000000; --bg-grad: none;
+    --card: #1c1c1e; --border: #38383a; --text: #f5f5f7; --muted: #98989d; --faint: #98989d; --accent: #0a84ff; --shadow: none; }
+  :root[data-theme="light"] { --bg: #f5f5f7; --card: #ffffff; --border: #d2d2d7; --text: #1d1d1f; --muted: #86868b; --faint: #86868b; --accent: #0071e3; }
   * { box-sizing: border-box; }
   body { margin: 0; min-height: 100vh; background: var(--bg); background-image: var(--bg-grad); background-repeat: no-repeat; color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif; }
-  .wrap { max-width: 980px; margin: 0 auto; padding: 72px 24px 56px; }
-  .brand button { font: inherit; font-size: 30px; font-weight: 650; letter-spacing: -.02em; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", "Microsoft YaHei", sans-serif; }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 32px 20px 24px; }
+  .brand button { font: inherit; font-size: 28px; font-weight: 700; letter-spacing: -.02em; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
   .brand .dot { color: var(--accent); }
-  .tagline { color: var(--muted); font-size: 15px; margin: 8px 0 0; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
-  .card { display: block; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; text-decoration: none; color: inherit; box-shadow: var(--shadow); }
-  .card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .name { font-size: 16px; font-weight: 600; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .card { display: block; padding: 20px; background: var(--card); border: 0; border-radius: 18px; text-decoration: none; color: inherit; box-shadow: var(--shadow); }
+  .card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .card-top .icon { width: 36px; height: 36px; flex: none; border-radius: 9px; }
+  .desc { color: var(--muted); font-size: 13px; line-height: 1.6; margin: 0 0 12px; }
+  .secondary { margin: 16px 0 0; font-size: 13px; }
+  .secondary a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); padding: 0 8px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  @media (max-width:640px) { .grid { grid-template-columns: 1fr; } footer button { min-height:44px; } }
+  .name { font-size: 17px; font-weight: 600; }
   .status { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--faint); }
   .led { width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
   .status[data-s="up"] .led { background: #35c07a; } .status[data-s="up"] { color: #35c07a; }
   .status[data-s="up"], .status[data-s="check"] { visibility: hidden; }
   .status[data-s="down"] .led { background: #e0574a; } .status[data-s="down"] { color: #e0574a; }
-  .desc { font-size: 13px; line-height: 1.55; color: var(--muted); margin: 0 0 12px; }
-  .peek { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-  .peek li { display: grid; grid-template-columns: auto 1fr; gap: 8px; font-size: 13px; line-height: 1.45; }
-  .peek { min-height: 73px; } /* 3 行 × 13px×1.45 + 2 × 8px gap：数据回来前先占位，卡片不跳 (CLS) */
+  .peek { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .peek li { display: grid; grid-template-columns: auto 1fr; gap: 8px; font-size: 14px; line-height: 1.5; }
+  .peek { min-height: 21px; } /* 1 行 × 13px×1.45：数据回来前先占位，卡片不跳 (CLS) */
   .peek li > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .peek .when { font-family: var(--mono); font-size: 11px; color: var(--faint); white-space: nowrap; padding-top: 2px; }
-  .host { font-family: var(--mono); font-size: 11.5px; color: var(--faint); }
+  .peek .when { font-size: 12px; color: var(--faint); white-space: nowrap; padding-top: 2px; }
   .header-main { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
   .site-traffic {
-    display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-family: var(--mono);
-    color: var(--muted); background: var(--card); border: 1px solid var(--border); padding: 5px 14px;
+    display: inline-flex; align-items: center; gap: 8px; font-size: 12px;
+    color: var(--muted); background: var(--card); border: 0; padding: 6px 14px;
     border-radius: 20px; box-shadow: var(--shadow);
   }
   .traffic-pulse {
@@ -89,23 +91,22 @@
   .site-traffic .traffic-item strong { color: var(--text); font-weight: 650; }
   .site-traffic .traffic-sep { color: var(--border); margin: 0 1px; }
   .card-footer {
-    display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px;
-    padding-top: 8px; border-top: 1px dashed var(--border);
+    display: flex; align-items: center; gap: 8px; margin-top: 12px;
   }
   .card-traffic {
-    font-family: var(--mono); font-size: 11px; color: var(--faint);
+    font-size: 12px; color: var(--faint);
     display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
   }
   .card-traffic .t-today { color: var(--accent); font-weight: 600; }
   .card-traffic .t-yesterday { color: var(--muted); font-weight: 550; }
   .card-traffic .t-sep { color: var(--border); }
-  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--faint); display: flex; gap: 8px 16px; align-items: center; }
-  footer .sep { flex: 1 }
-  #theme, #admin-toggle, #pwa-install { background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--muted); font: inherit; font-size: 12px; padding: 4px 10px; cursor: pointer; transition: all .15s ease; }
-  #pwa-install { display: none; align-items: center; gap: 4px; color: var(--accent); border-color: rgba(200, 114, 44, 0.4); }
+  footer { margin-top: 16px; padding-top: 0; border-top: 0; font-size: 12px; color: var(--faint); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  #theme, #admin-toggle, #pwa-install { background: var(--card); border: 0; border-radius: 999px; color: var(--muted); font: inherit; font-size: 12px; padding: 6px 14px; cursor: pointer; box-shadow: var(--shadow); }
+  #pwa-install { display: none; align-items: center; gap: 4px; color: var(--accent); }
   #pwa-install:hover { background: rgba(200, 114, 44, 0.08); }
-  #admin-toggle.active { border-color: rgba(69, 160, 107, 0.4); color: var(--accent); background: rgba(69, 160, 107, 0.08); font-weight: 500; }
+  #admin-toggle.active { color: var(--accent); background: rgba(69, 160, 107, 0.12); font-weight: 500; }
 </style>
+  <script defer src="https://stats.readcine.com/script.js" data-website-id="db04ff6d-f748-4a52-b0b3-08f0ec4432b2"></script>
 </head>
 <body>
 <div class="wrap">
@@ -114,12 +115,10 @@
       <h1 class="brand"><button id="brand-btn" type="button">readcine<span class="dot">.</span></button></h1>
       <div class="site-traffic" id="site-traffic" style="display:none" title="独立访客人数 (UV)：同一自然人当天无论刷新或进入多少次只计 1 人"></div>
     </div>
-    <p class="tagline">卡片里是最近更新 · 点卡片进站 · 点标题刷新状态</p>
   </header>
   <main class="grid" id="grid"></main>
+  <nav class="secondary" aria-label="更多入口"><a href="https://movie.readcine.com/">电影资源库</a> · <a href="https://ai.readcine.com/stream.html">AI 全量更新 →</a></nav>
   <footer>
-    <span id="stamp">—</span>
-    <span class="sep"></span>
     <button id="pwa-install" type="button" title="安装为桌面或手机独立应用">📲 安装应用</button>
     <button id="admin-toggle" type="button" title="点击切换站长免统计模式（开启后不向 Cloudflare 上报，不计入个人访问）">🛡️ 站长免统计: 关</button>
     <button id="theme" type="button">浅色</button>
@@ -128,13 +127,10 @@
 <script>
 const SERVICES = [
   // 公网站点挂在这里。只给自己用的放在 /private/。
-  { id: 'guide', icon: '🎞', name: '电影导赏', desc: '选片之前先看导赏。评分、奖项和主创在一张卡上，默认不剧透。', url: 'https://guide.readcine.com' },
-  { id: 'events', icon: '📅', name: '电影活动', desc: '长沙非院线放映日历。', url: 'https://events.readcine.com' },
-  { id: 'news', icon: '📡', name: '银幕新讯', desc: '高口碑新片与熟肉上线雷达。流媒体首发与节展大奖，不收爆米花。', url: 'https://news.readcine.com', fallback: 'https://xmcter.github.io/movie-awards-site/' },
-  { id: 'ai', icon: '📡', name: 'AI 情报站', desc: 'AI 工具与 Agent 更新，中文提炼。', url: 'https://ai.readcine.com', fallback: 'https://ai-readcine.forcine.dpdns.org' },
-  { id: 'deals', icon: '🏷️', name: 'CodingPlan Deals', desc: '编程套餐折扣雷达，时间线与优惠情报。', url: 'https://ai.readcine.com/stream.html?filter=deals', fallback: 'https://go.readcine.com/deals/' }
+  { id: 'movie', icon: '/icons/movie.svg', name: '电影', desc: '资讯与导赏合流页：资讯为默认标签，导赏为第二标签。', url: 'https://guide.readcine.com/cinema.html', fallback: 'https://news.readcine.com' },
+  { id: 'ai', icon: '/icons/ai.svg', name: 'AI 情报站', desc: '限时额度、免费机会与优惠折扣，优先看仍可领取的福利。', url: 'https://ai.readcine.com/', fallback: 'https://ai.readcine.com' },
 ];
-const PEEK_IDS = new Set(['news','ai','deals']); // 有「最近更新」的卡片，先占位
+const PEEK_IDS = new Set(['movie','ai']); // 有「最近更新」的卡片，先占位
 const JUNK_RE = /(ARASHI|AROUND ASIA|演唱会|音乐会|巡演|音乐节|concert|tour live|MV合集)/i;
 const grid = document.getElementById('grid');
 function esc(s){const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
@@ -149,7 +145,7 @@ function whenKey(w){
 function newestFirst(items){
   return (items||[]).slice().sort((a,b)=>whenKey(b.when).localeCompare(whenKey(a.when)));
 }
-function peekHtml(items){return '<ul class="peek">'+items.slice(0,3).map(it=>'<li><span class="when">'+esc(it.when||'')+'</span><span>'+esc(it.text||'')+'</span></li>').join('')+'</ul>';}
+function peekHtml(items){return '<ul class="peek">'+items.slice(0,1).map(it=>'<li><span class="when">'+esc(it.when||fmtWhen(it.date)||'')+'</span><span>'+esc(it.text||it.title||'')+'</span></li>').join('')+'</ul>';}
 function renderPeek(el,items){
   if(!items||!items.length) return;
   const footer=el.querySelector('.card-footer') || el.querySelector('.host');
@@ -179,10 +175,9 @@ function isJunkTitle(t){
 const cards=SERVICES.map(svc=>{
   const a=document.createElement('a');
   a.className='card'; a.href=svc.url; a.rel='noopener'; a.dataset.id=svc.id;
-  a.innerHTML='<div class="card-top"><span class="icon">'+svc.icon+'</span><span class="name">'+svc.name+'</span><span class="status" data-s="check"><span class="led"></span><span class="txt"></span></span></div><p class="desc">'+svc.desc+'</p>' +
+  a.innerHTML='<div class="card-top"><img class="icon" src="'+esc(svc.icon)+'" width="36" height="36" alt=""><span class="name">'+svc.name+'</span><span class="status" data-s="check"><span class="led"></span><span class="txt"></span></span></div><p class="desc">'+esc(svc.desc)+'</p>' +
     (PEEK_IDS.has(svc.id) ? '<ul class="peek"></ul>' : '') +
     '<div class="card-footer">' +
-      '<div class="host">'+new URL(svc.url).host+'</div>' +
       '<div class="card-traffic" id="traffic-'+svc.id+'" style="display:none"></div>' +
     '</div>';
   grid.appendChild(a);
@@ -194,26 +189,52 @@ const HEADLINES_CACHE_KEY = 'readcine_headlines_cache';
 function applyHeadlines(data){
   if(!data) return;
   for(const {svc,el} of cards){
-    const items=data[svc.id]||[];
+    const items=svc.id==='movie'?(data.movie||data.news||[]):(data[svc.id]||[]);
     renderPeek(el, items);
   }
 }
 
-async function loadHeadlines(){
+// Every source has its own timeout and only updates its own card. Slow or failed
+// live requests never delay cached headlines or overwrite another source.
+async function fetchJson(url, timeout=4500){
+  const ctl=new AbortController();
+  const timer=setTimeout(()=>ctl.abort(),timeout);
   try{
-    const cached=localStorage.getItem(HEADLINES_CACHE_KEY);
-    if(cached) applyHeadlines(JSON.parse(cached));
-  }catch(_){}
-
-  try{
-    const res=await fetch('headlines.json');
-    if(!res.ok) return;
-    const data=await res.json();
-    applyHeadlines(data);
-    try{ localStorage.setItem(HEADLINES_CACHE_KEY, JSON.stringify(data)); }catch(_){}
-  }catch(e){}
+    const res=await fetch(url,{signal:ctl.signal});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    return await res.json();
+  }finally{ clearTimeout(timer); }
 }
-
+let headlineGeneration=0;
+async function loadHeadlines(){
+  const generation=++headlineGeneration;
+  let data={};
+  try{ data=JSON.parse(localStorage.getItem(HEADLINES_CACHE_KEY)||'{}')||{}; }catch(_){}
+  applyHeadlines(data);
+  const live=new Set();
+  function update(patch){
+    if(generation!==headlineGeneration) return;
+    data={...data,...patch};
+    applyHeadlines(patch);
+    try{ localStorage.setItem(HEADLINES_CACHE_KEY,JSON.stringify(data)); }catch(_){}
+  }
+  const lightweight=fetchJson('headlines.json',2500).then(fb=>{
+    const patch={};
+    if(!live.has('movie') && (fb.movie||fb.news)?.length) patch.movie=fb.movie||fb.news;
+    if(!live.has('ai') && fb.ai?.length) patch.ai=fb.ai;
+    update(patch);
+  }).catch(()=>{});
+  const movie=fetchJson('https://raw.githubusercontent.com/xmcter/movie-awards-site/main/src/data/auteur-news.json').then(arr=>{
+    const latest=(Array.isArray(arr)?arr:[]).filter(x=>x.summary||x.title).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')))[0];
+    if(latest){ live.add('movie'); update({movie:[{when:fmtWhen(latest.date),text:latest.summary||latest.title}]}); }
+  }).catch(()=>{});
+  const ai=fetchJson('https://ai.readcine.com/feed.json').then(feed=>{
+    const list=feed.updates||feed.items||[];
+    const latest=(Array.isArray(list)?list:[]).filter(x=>x.title||x.text).sort((a,b)=>String(b.when||b.date||'').localeCompare(String(a.when||a.date||'')))[0];
+    if(latest){ live.add('ai'); update({ai:[{when:fmtWhen(latest.when||latest.date),text:String(latest.title||latest.text).slice(0,60)}]}); }
+  }).catch(()=>{});
+  await Promise.allSettled([lightweight,movie,ai]);
+}
 async function probe(url){
   const ctl=new AbortController();
   const timer=setTimeout(()=>ctl.abort(),2500);
@@ -407,14 +428,11 @@ grid.addEventListener('click',e=>{
 const brandBtn=document.getElementById('brand-btn');
 async function runChecks(){
   await Promise.all(cards.map(check));
-  const stampEl=document.getElementById('stamp');
-  if(stampEl) stampEl.textContent='最后检测 '+new Date().toLocaleTimeString('zh-CN',{hour12:false});
 }
 
 async function refresh(){
   for(const card of cards){
     card.el.href=card.svc.url;
-    card.el.querySelector('.host').textContent=new URL(card.svc.url).host;
     setStatus(card.el,'check','');
   }
   await Promise.all([runChecks(),loadHeadlines(),loadStats()]);

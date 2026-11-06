@@ -1,48 +1,53 @@
 {
-  "updated": "2026-10-26",
+  "updated": "2026-11-06",
   "news": [
     {
-      "title": "芝加哥62金雨果：格里策巴赫《梦想的冒险》",
-      "url": "https://news.readcine.com/",
-      "date": "2026-10-26"
+      "when": "10-30",
+      "text": "洪常秀新片《无处安放双眼》多地发行权成交"
     },
     {
-      "title": "芝加哥62：滨口《突然》最佳编剧、是枝《蒙然回首》最佳摄影",
-      "url": "https://news.readcine.com/",
-      "date": "2026-10-26"
+      "when": "10-30",
+      "text": "亚太电影奖最佳导演《九座通往天堂的庙》"
     },
     {
-      "title": "李沧东《可能的爱情》美加英爱日有限上映，Netflix 11/6",
-      "url": "https://news.readcine.com/",
-      "date": "2026-10-23"
+      "when": "10-28",
+      "text": "芝加哥62 / 哥谭36 奖讯"
+    },
+    {
+      "when": "10-27",
+      "text": "银幕新讯时间线更新"
+    },
+    {
+      "when": "10-26",
+      "text": "高分口碑与奖讯更新"
     }
   ],
   "ai": [
     {
-      "when": "09-15",
-      "text": "Cline Desktop 0.0.28 + CLI 3.0.62"
+      "when": "11-02",
+      "text": "OpenAI 提升漏洞赏金奖励，激励安全研究人员"
     },
     {
-      "when": "09-15",
-      "text": "Anthropic 公布 agent 爆炸半径限制"
+      "when": "11-02",
+      "text": "OpenAI 准备下一轮安全冲刺，加强平台防御"
     },
     {
-      "when": "09-14",
-      "text": "马斯克：Grok 4.8 本周结束训练进 RL"
+      "when": "10-30",
+      "text": "Claude Opus 4.8 快速模式已弃用，建议用户迁移至 Opus 5.5"
     }
   ],
   "deals": [
     {
-      "when": "09-20",
-      "text": "Command Code GOAT $10 含 $70 额度"
+      "when": "11-05",
+      "text": "OpenRouter 免费通道：当前 12 款 :free 模型 0 成本推理"
     },
     {
-      "when": "09-19",
-      "text": "Claude Code 随 Pro $20 · 限额翻倍"
+      "when": "10-27",
+      "text": "Trae 定价：Lite $3 / Pro $20 / Pro+ $60 / Ultra $200，年付最高省 17%"
     },
     {
-      "when": "09-18",
-      "text": "Devin SWE-2 限时免费 · Antigravity 个人版 $0"
+      "when": "10-26",
+      "text": "Command Code 限时免费模型：Glyph Cluster 预览期免费 · Laguna S 2.1 / Bea"
     }
   ]
 }
